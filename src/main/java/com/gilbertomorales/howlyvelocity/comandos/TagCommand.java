@@ -10,6 +10,8 @@ import net.kyori.adventure.text.Component;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class TagCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -25,7 +27,7 @@ public class TagCommand implements SimpleCommand {
         CommandSource source = invocation.source();
 
         if (!(source instanceof Player player)) {
-            source.sendMessage(Component.text("§cApenas jogadores podem usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
@@ -42,7 +44,7 @@ public class TagCommand implements SimpleCommand {
         // Comando para remover tag
         if (subCommand.equals("remover") || subCommand.equals("remove")) {
             tagManager.removePlayerTag(player.getUniqueId());
-            player.sendMessage(Component.text("§aTag removida com sucesso! Agora você não possui nenhuma tag."));
+            player.sendMessage(legacySection().deserialize("§aTag removida com sucesso! Agora você não possui nenhuma tag."));
             return;
         }
 
@@ -50,7 +52,7 @@ public class TagCommand implements SimpleCommand {
         String tagId = subCommand;
 
         if (!tagManager.hasTag(tagId)) {
-            player.sendMessage(Component.text("§cTag não encontrada. Use /tag para ver as tags disponíveis."));
+            player.sendMessage(legacySection().deserialize("§cTag não encontrada. Use /tag para ver as tags disponíveis."));
             return;
         }
 
@@ -58,35 +60,35 @@ public class TagCommand implements SimpleCommand {
 
         // Verificar permissão
         if (!tagInfo.getPermission().isEmpty() && !player.hasPermission(tagInfo.getPermission())) {
-            player.sendMessage(Component.text("§cVocê não tem permissão para usar esta tag."));
+            player.sendMessage(legacySection().deserialize("§cVocê não tem permissão para usar esta tag."));
             return;
         }
 
         // Definir a tag
         tagManager.setPlayerTag(player.getUniqueId(), tagId);
-        player.sendMessage(Component.text("§aTag alterada para " + tagInfo.getDisplay() + " §acom sucesso!"));
+        player.sendMessage(legacySection().deserialize("§aTag alterada para " + tagInfo.getDisplay() + " §acom sucesso!"));
     }
 
     private void showAvailableTags(Player player) {
         List<String> availableTags = tagManager.getPlayerAvailableTags(player);
 
         if (availableTags.isEmpty()) {
-            player.sendMessage(Component.text("§cVocê não tem nenhuma tag disponível."));
+            player.sendMessage(legacySection().deserialize("§cVocê não tem nenhuma tag disponível."));
             return;
         }
 
-        player.sendMessage(Component.text(""));
-        player.sendMessage(Component.text("§eUtilize /tag <nome> para selecionar uma tag"));
-        player.sendMessage(Component.text("§eUtilize /tag remover para remover sua tag atual"));
-        player.sendMessage(Component.text(""));
+        player.sendMessage(legacySection().deserialize(""));
+        player.sendMessage(legacySection().deserialize("§eUtilize /tag <nome> para selecionar uma tag"));
+        player.sendMessage(legacySection().deserialize("§eUtilize /tag remover para remover sua tag atual"));
+        player.sendMessage(legacySection().deserialize(""));
 
         // Mostrar tag atual
         String currentTag = tagManager.getCurrentPlayerTag(player.getUniqueId());
         if (currentTag != null) {
             TagManager.TagInfo currentTagInfo = tagManager.getTagInfo(currentTag);
-            player.sendMessage(Component.text("§fTag atual: " + currentTagInfo.getDisplay()));
+            player.sendMessage(legacySection().deserialize("§fTag atual: " + currentTagInfo.getDisplay()));
         } else {
-            player.sendMessage(Component.text("§fTag atual: §7Nenhuma"));
+            player.sendMessage(legacySection().deserialize("§fTag atual: §7Nenhuma"));
         }
         StringJoiner tagsJoiner = new StringJoiner("§7, §f");
 
@@ -98,7 +100,7 @@ public class TagCommand implements SimpleCommand {
             tagsJoiner.add(cleanedDisplay);
         }
 
-        player.sendMessage(Component.text("§fTags disponíveis: §f" + tagsJoiner.toString()));
+        player.sendMessage(legacySection().deserialize("§fTags disponíveis: §f" + tagsJoiner.toString()));
 
     }
 

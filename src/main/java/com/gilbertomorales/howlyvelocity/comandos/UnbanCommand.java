@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class UnbanCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -34,12 +36,12 @@ public class UnbanCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("howly.gerente")) {
-            source.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
             return;
         }
 
         if (args.length < 1) {
-            source.sendMessage(Component.text("§cUtilize: /unban <jogador/#id>"));
+            source.sendMessage(legacySection().deserialize("§cUtilize: /unban <jogador/#id>"));
             return;
         }
 
@@ -53,16 +55,16 @@ public class UnbanCommand implements SimpleCommand {
             unbannerName = "Console";
         }
 
-        source.sendMessage(Component.text("§eBuscando jogador..."));
+        source.sendMessage(legacySection().deserialize("§eBuscando jogador..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
                 unbanPlayer(source, result.getUUID(), result.getName(), unbannerName);
             } else {
-                source.sendMessage(Component.text("§cJogador não encontrado."));
+                source.sendMessage(legacySection().deserialize("§cJogador não encontrado."));
             }
         }).exceptionally(ex -> {
-            source.sendMessage(Component.text("§cErro ao buscar jogador: " + ex.getMessage()));
+            source.sendMessage(legacySection().deserialize("§cErro ao buscar jogador: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });
@@ -72,7 +74,7 @@ public class UnbanCommand implements SimpleCommand {
         // Verificar se o jogador está banido
         api.getPunishmentAPI().isPlayerBanned(targetUUID).thenAccept(isBanned -> {
             if (!isBanned) {
-                source.sendMessage(Component.text("§cEste jogador não está banido."));
+                source.sendMessage(legacySection().deserialize("§cEste jogador não está banido."));
                 return;
             }
 
@@ -86,15 +88,15 @@ public class UnbanCommand implements SimpleCommand {
 
                     server.getAllPlayers().stream()
                             .filter(p -> p.hasPermission("howly.ajudante"))
-                            .forEach(p -> p.sendMessage(Component.text(unbanMessage)));
+                            .forEach(p -> p.sendMessage(legacySection().deserialize(unbanMessage)));
 
                     // Notificar quem executou o comando
-                    source.sendMessage(Component.text("§aJogador desbanido com sucesso!"));
+                    source.sendMessage(legacySection().deserialize("§aJogador desbanido com sucesso!"));
                 } else {
-                    source.sendMessage(Component.text("§cNão foi possível desbanir o jogador."));
+                    source.sendMessage(legacySection().deserialize("§cNão foi possível desbanir o jogador."));
                 }
             }).exceptionally(ex -> {
-                source.sendMessage(Component.text("§cErro ao desbanir jogador: " + ex.getMessage()));
+                source.sendMessage(legacySection().deserialize("§cErro ao desbanir jogador: " + ex.getMessage()));
                 ex.printStackTrace();
                 return null;
             });

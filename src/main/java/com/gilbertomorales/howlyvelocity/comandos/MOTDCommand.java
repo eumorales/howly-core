@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class MOTDCommand implements SimpleCommand {
 
     private final MOTDManager motdManager;
@@ -25,7 +27,7 @@ public class MOTDCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("howly.gerente")) {
-            source.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
             return;
         }
 
@@ -42,7 +44,7 @@ public class MOTDCommand implements SimpleCommand {
                 break;
             case "definir":
                 if (args.length < 2) {
-                    source.sendMessage(Component.text("§cUtilize: /motd definir <mensagem>"));
+                    source.sendMessage(legacySection().deserialize("§cUtilize: /motd definir <mensagem>"));
                     return;
                 }
                 String newMotd = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
@@ -58,42 +60,42 @@ public class MOTDCommand implements SimpleCommand {
     }
 
     private void showCurrentMotd(CommandSource source) {
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§eMOTD atual:"));
-        source.sendMessage(Component.text("§fLinha 1: §r" + motdManager.getFirstLine()));
-        source.sendMessage(Component.text("§fLinha 2: §r" + motdManager.getSecondLine()));
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§eVisualização:"));
-        source.sendMessage(Component.text(CoresUtils.colorir(motdManager.getFirstLine())));
-        source.sendMessage(Component.text(CoresUtils.colorir(motdManager.getSecondLine())));
-        source.sendMessage(Component.text(""));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§eMOTD atual:"));
+        source.sendMessage(legacySection().deserialize("§fLinha 1: §r" + motdManager.getFirstLine()));
+        source.sendMessage(legacySection().deserialize("§fLinha 2: §r" + motdManager.getSecondLine()));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§eVisualização:"));
+        source.sendMessage(legacySection().deserialize(CoresUtils.colorir(motdManager.getFirstLine())));
+        source.sendMessage(legacySection().deserialize(CoresUtils.colorir(motdManager.getSecondLine())));
+        source.sendMessage(legacySection().deserialize(""));
     }
 
     private void setMotd(CommandSource source, String newMotd) {
         motdManager.setSecondLine(newMotd);
-        source.sendMessage(Component.text("§aA segunda linha do MOTD foi alterada com sucesso!"));
+        source.sendMessage(legacySection().deserialize("§aA segunda linha do MOTD foi alterada com sucesso!"));
         showCurrentMotd(source);
     }
 
     private void resetMotd(CommandSource source) {
         if (motdManager.isDefault()) {
-            source.sendMessage(Component.text("§cO MOTD já está com a mensagem padrão."));
+            source.sendMessage(legacySection().deserialize("§cO MOTD já está com a mensagem padrão."));
             return;
         }
         
         motdManager.resetToDefault();
-        source.sendMessage(Component.text("§aO MOTD foi restaurado para a mensagem padrão."));
+        source.sendMessage(legacySection().deserialize("§aO MOTD foi restaurado para a mensagem padrão."));
         showCurrentMotd(source);
     }
 
     private void sendUsage(CommandSource source) {
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§eUso do comando /motd:"));
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§e/motd ver §8- §7Exibe o MOTD atual"));
-        source.sendMessage(Component.text("§e/motd definir <mensagem> §8- §7Define a segunda linha do MOTD"));
-        source.sendMessage(Component.text("§e/motd padrao §8- §7Restaura o MOTD para a mensagem padrão"));
-        source.sendMessage(Component.text(""));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§eUso do comando /motd:"));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§e/motd ver §8- §7Exibe o MOTD atual"));
+        source.sendMessage(legacySection().deserialize("§e/motd definir <mensagem> §8- §7Define a segunda linha do MOTD"));
+        source.sendMessage(legacySection().deserialize("§e/motd padrao §8- §7Restaura o MOTD para a mensagem padrão"));
+        source.sendMessage(legacySection().deserialize(""));
     }
 
     @Override

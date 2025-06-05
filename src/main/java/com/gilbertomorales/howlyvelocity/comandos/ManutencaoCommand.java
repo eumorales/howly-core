@@ -11,6 +11,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class ManutencaoCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -27,7 +29,7 @@ public class ManutencaoCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("howly.gerente")) {
-            source.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
             return;
         }
 
@@ -53,12 +55,12 @@ public class ManutencaoCommand implements SimpleCommand {
 
     private void startMaintenance(CommandSource source) {
         if (motdManager.isInMaintenance()) {
-            source.sendMessage(Component.text("§cO servidor já está em modo de manutenção."));
+            source.sendMessage(legacySection().deserialize("§cO servidor já está em modo de manutenção."));
             return;
         }
 
         motdManager.setMaintenance(true);
-        source.sendMessage(Component.text("§aModo de manutenção ativado com sucesso!"));
+        source.sendMessage(legacySection().deserialize("§aModo de manutenção ativado com sucesso!"));
         
         // Kickar jogadores sem permissão
         kickPlayersWithoutPermission();
@@ -66,12 +68,12 @@ public class ManutencaoCommand implements SimpleCommand {
 
     private void endMaintenance(CommandSource source) {
         if (!motdManager.isInMaintenance()) {
-            source.sendMessage(Component.text("§cO servidor não está em modo de manutenção."));
+            source.sendMessage(legacySection().deserialize("§cO servidor não está em modo de manutenção."));
             return;
         }
 
         motdManager.setMaintenance(false);
-        source.sendMessage(Component.text("§aModo de manutenção desativado com sucesso!"));
+        source.sendMessage(legacySection().deserialize("§aModo de manutenção desativado com sucesso!"));
     }
 
     private void kickPlayersWithoutPermission() {
@@ -85,17 +87,17 @@ public class ManutencaoCommand implements SimpleCommand {
     }
 
     private void sendUsage(CommandSource source) {
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§eUso do comando /manutencao:"));
-        source.sendMessage(Component.text(""));
-        source.sendMessage(Component.text("§e/manutencao iniciar §8- §7Ativa o modo de manutenção"));
-        source.sendMessage(Component.text("§e/manutencao finalizar §8- §7Desativa o modo de manutenção"));
-        source.sendMessage(Component.text(""));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§eUso do comando /manutencao:"));
+        source.sendMessage(legacySection().deserialize(""));
+        source.sendMessage(legacySection().deserialize("§e/manutencao iniciar §8- §7Ativa o modo de manutenção"));
+        source.sendMessage(legacySection().deserialize("§e/manutencao finalizar §8- §7Desativa o modo de manutenção"));
+        source.sendMessage(legacySection().deserialize(""));
         
         // Mostrar status atual
         String status = motdManager.isInMaintenance() ? "§aAtivado" : "§cDesativado";
-        source.sendMessage(Component.text("§fStatus atual: " + status));
-        source.sendMessage(Component.text(""));
+        source.sendMessage(legacySection().deserialize("§fStatus atual: " + status));
+        source.sendMessage(legacySection().deserialize(""));
     }
 
     @Override

@@ -16,6 +16,8 @@ import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 
 import java.util.*;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class TellCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -35,12 +37,12 @@ public class TellCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!(source instanceof Player sender)) {
-            source.sendMessage(Component.text("Apenas jogadores podem usar este comando.").color(TextColor.color(255, 85, 85)));
+            source.sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("§cUtilize: /tell <jogador/#id> <mensagem>").color(TextColor.color(255, 85, 85)));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /tell <jogador/#id> <mensagem>"));
             return;
         }
 
@@ -56,13 +58,13 @@ public class TellCommand implements SimpleCommand {
 
                     // Não permitir enviar mensagem para si mesmo
                     if (target.equals(sender)) {
-                        sender.sendMessage(Component.text("Você não pode enviar mensagens para si mesmo.").color(TextColor.color(255, 85, 85)));
+                        sender.sendMessage(legacySection().deserialize("§cVocê não pode enviar mensagens para si mesmo."));
                         return;
                     }
 
                     // Verificar se o destinatário está ignorando o remetente
                     if (ignoreManager.isIgnoring(target.getUniqueId(), sender.getUniqueId())) {
-                        sender.sendMessage(Component.text("Este jogador está te ignorando.").color(TextColor.color(255, 85, 85)));
+                        sender.sendMessage(legacySection().deserialize("§cEste jogador está te ignorando."));
                         return;
                     }
 
@@ -77,12 +79,12 @@ public class TellCommand implements SimpleCommand {
                     target.sendMessage(targetMessage);
 
                     // Salvar para /r
-                    lastReplies.put(target.getUniqueId(), sender.getUniqueId());
+                    updateLastMessageSender(target.getUniqueId(), sender.getUniqueId());
                 } else {
-                    sender.sendMessage(Component.text("O usuário precisa estar online para receber mensagens.").color(TextColor.color(255, 85, 85)));
+                    sender.sendMessage(legacySection().deserialize("§cO usuário precisa estar online para receber mensagens."));
                 }
             } else {
-                sender.sendMessage(Component.text("Jogador não encontrado.").color(TextColor.color(255, 85, 85)));
+                sender.sendMessage(legacySection().deserialize("§cJogador não encontrado."));
             }
         }).exceptionally(ex -> {
             sender.sendMessage(Component.text("Erro ao buscar usuário: " + ex.getMessage()).color(TextColor.color(255, 85, 85)));
@@ -144,5 +146,9 @@ public class TellCommand implements SimpleCommand {
 
     public UUID getLastMessageSender(UUID playerUUID) {
         return lastReplies.get(playerUUID);
+    }
+
+    public void updateLastMessageSender(UUID playerUUID, UUID senderUUID) {
+        lastReplies.put(playerUUID, senderUUID);
     }
 }

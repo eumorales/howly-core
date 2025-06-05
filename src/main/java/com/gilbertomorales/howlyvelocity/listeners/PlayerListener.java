@@ -15,7 +15,7 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
@@ -65,7 +65,7 @@ public class PlayerListener {
                         "§fTempo restante: §7" + timeRemaining + "\n\n" +
                         "§eUse o ID #" + punishment.getId() + " para criar uma revisão em §ndiscord.gg/howly§e.";
 
-                player.disconnect(LegacyComponentSerializer.legacySection().deserialize(kickMessage));
+                player.disconnect(legacySection().deserialize(kickMessage));
             }
         });
 
@@ -90,7 +90,7 @@ public class PlayerListener {
                             "§fAutor: §7" + punishment.getPunisher() + "\n" +
                             "§fTempo restante: §7" + timeRemaining + "\n\n§eVocê pode apelar no nosso discord §ndiscord.gg/howly§e.\n";
 
-                    player.sendMessage(Component.text(message));
+                    player.sendMessage(legacySection().deserialize(message));
                 }
             });
         }).delay(1, TimeUnit.SECONDS).schedule();

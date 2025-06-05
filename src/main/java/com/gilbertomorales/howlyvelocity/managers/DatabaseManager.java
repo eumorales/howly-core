@@ -398,7 +398,7 @@ public class DatabaseManager {
 
     private boolean columnExists(Connection conn, String tableName, String columnName) {
         try {
-            ResultSet rs = conn.getMetaData().getColumns(null, null, tableName.toUpperCase(), columnName.toUpperCase());
+            ResultSet rs = conn.getMetaData().getColumns(null, null, tableName, columnName);
             boolean exists = rs.next();
             rs.close();
             return exists;
@@ -550,19 +550,5 @@ public class DatabaseManager {
 
     public boolean isSQLite() {
         return configManager.isSQLite();
-    }
-
-    private void verifyTableStructure() throws SQLException {
-        try (Connection conn = getConnection()) {
-            // Verificar se a estrutura das tabelas está correta
-            if (tableExists(conn, "players")) {
-                if (!columnExists(conn, "players", "id")) {
-                    logger.warn("Tabela 'players' existe mas sem coluna 'id'. Recriando...");
-                    try (Statement stmt = conn.createStatement()) {
-                        stmt.execute("DROP TABLE IF EXISTS players");
-                    }
-                }
-            }
-        }
     }
 }

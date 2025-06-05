@@ -5,10 +5,11 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
 
 public class StaffChatCommand implements SimpleCommand {
 
@@ -26,12 +27,12 @@ public class StaffChatCommand implements SimpleCommand {
         CommandSource sender = invocation.source();
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("§cApenas jogadores podem executar este comando."));
+            sender.sendMessage(legacySection().deserialize("§cApenas jogadores podem executar este comando."));
             return;
         }
 
         if (!player.hasPermission("howly.ajudante")) {
-            player.sendMessage(Component.text("§cVocê precisa ser do grupo §eAjudante §cou superior para executar este comando."));
+            player.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §eAjudante §cou superior para executar este comando."));
             return;
         }
 
@@ -40,22 +41,22 @@ public class StaffChatCommand implements SimpleCommand {
         if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
             if (restricaoChatEquipe.contains(player.getUsername())) {
                 restricaoChatEquipe.remove(player.getUsername());
-                player.sendMessage(Component.text("§aAgora você pode enviar e receber mensagens no chat da equipe."));
+                player.sendMessage(legacySection().deserialize("§aAgora você pode enviar e receber mensagens no chat da equipe."));
             } else {
                 restricaoChatEquipe.add(player.getUsername());
-                player.sendMessage(Component.text("§eO chat da equipe foi desativado para você."));
+                player.sendMessage(legacySection().deserialize("§eO chat da equipe foi desativado para você."));
             }
             return;
         }
 
         if (restricaoChatEquipe.contains(player.getUsername())) {
-            player.sendMessage(Component.text("§cVocê está com o chat da equipe desabilitado!"));
-            player.sendMessage(Component.text("§cUtilize /s toggle para ativá-lo."));
+            player.sendMessage(legacySection().deserialize("§cVocê está com o chat da equipe desabilitado!"));
+            player.sendMessage(legacySection().deserialize("§cUtilize /s toggle para ativá-lo."));
             return;
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("§cUso correto: /s <\"mensagem\"/toggle>"));
+            player.sendMessage(legacySection().deserialize("§cUso correto: /s <\"mensagem\"/toggle>"));
             return;
         }
 
@@ -71,7 +72,7 @@ public class StaffChatCommand implements SimpleCommand {
         for (Player staff : server.getAllPlayers()) {
             if (staff.hasPermission("howly.ajudante")) {
                 if (!restricaoChatEquipe.contains(staff.getUsername())) {
-                    staff.sendMessage(Component.text("§d§l[S] §7" + formattedName + ": §f" + message));
+                    staff.sendMessage(legacySection().deserialize("§d§l[S] §7" + formattedName + ": §f" + message));
                 }
             }
         }

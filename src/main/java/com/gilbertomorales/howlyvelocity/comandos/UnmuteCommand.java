@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class UnmuteCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -34,12 +36,12 @@ public class UnmuteCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("howly.gerente")) {
-            source.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
             return;
         }
 
         if (args.length < 1) {
-            source.sendMessage(Component.text("§cUtilize: /unmute <jogador/#id>"));
+            source.sendMessage(legacySection().deserialize("§cUtilize: /unmute <jogador/#id>"));
             return;
         }
 
@@ -53,16 +55,16 @@ public class UnmuteCommand implements SimpleCommand {
             unmuterName = "Console";
         }
 
-        source.sendMessage(Component.text("§eBuscando jogador..."));
+        source.sendMessage(legacySection().deserialize("§eBuscando jogador..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
                 unmutePlayer(source, result.getUUID(), result.getName(), unmuterName);
             } else {
-                source.sendMessage(Component.text("§cJogador não encontrado."));
+                source.sendMessage(legacySection().deserialize("§cJogador não encontrado."));
             }
         }).exceptionally(ex -> {
-            source.sendMessage(Component.text("§cErro ao buscar jogador: " + ex.getMessage()));
+            source.sendMessage(legacySection().deserialize("§cErro ao buscar jogador: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });
@@ -72,7 +74,7 @@ public class UnmuteCommand implements SimpleCommand {
         // Verificar se o jogador está mutado
         api.getPunishmentAPI().isPlayerMuted(targetUUID).thenAccept(isMuted -> {
             if (!isMuted) {
-                source.sendMessage(Component.text("§cEste jogador não está silenciado."));
+                source.sendMessage(legacySection().deserialize("§cEste jogador não está silenciado."));
                 return;
             }
 
@@ -86,20 +88,20 @@ public class UnmuteCommand implements SimpleCommand {
 
                     server.getAllPlayers().stream()
                             .filter(p -> p.hasPermission("howly.ajudante"))
-                            .forEach(p -> p.sendMessage(Component.text(unmuteMessage)));
+                            .forEach(p -> p.sendMessage(legacySection().deserialize(unmuteMessage)));
 
                     // Notificar jogador se estiver online
                     server.getPlayer(targetUUID).ifPresent(player -> {
-                        player.sendMessage(Component.text("§aVocê foi desmutado por §f" + unmuterName + "§a."));
+                        player.sendMessage(legacySection().deserialize("§aVocê foi desmutado por §f" + unmuterName + "§a."));
                     });
 
                     // Notificar quem executou o comando
-                    source.sendMessage(Component.text("§aJogador desmutado com sucesso!"));
+                    source.sendMessage(legacySection().deserialize("§aJogador desmutado com sucesso!"));
                 } else {
-                    source.sendMessage(Component.text("§cNão foi possível desmutar o jogador."));
+                    source.sendMessage(legacySection().deserialize("§cNão foi possível desmutar o jogador."));
                 }
             }).exceptionally(ex -> {
-                source.sendMessage(Component.text("§cErro ao desmutar jogador: " + ex.getMessage()));
+                source.sendMessage(legacySection().deserialize("§cErro ao desmutar jogador: " + ex.getMessage()));
                 ex.printStackTrace();
                 return null;
             });

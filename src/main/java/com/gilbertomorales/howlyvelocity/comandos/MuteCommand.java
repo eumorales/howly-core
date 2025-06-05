@@ -39,18 +39,18 @@ public class MuteCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("howly.gerente")) {
-            source.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
             return;
         }
 
         if (args.length < 2) {
-            source.sendMessage(Component.text(" "));
-            source.sendMessage(Component.text("§eUtilize: /mute <jogador/#id> <tempo> <motivo>"));
-            source.sendMessage(Component.text(" "));
-            source.sendMessage(Component.text("§fExemplo: §7/mute Jogador 7d Spam no chat"));
-            source.sendMessage(Component.text("§fExemplo: §7/mute #123 7d Spam no chat"));
-            source.sendMessage(Component.text("§fTempos: §7s (segundos), m (minutos), h (horas), d (dias), w (semanas), M (meses), permanent"));
-            source.sendMessage(Component.text(" "));
+            source.sendMessage(legacySection().deserialize(" "));
+            source.sendMessage(legacySection().deserialize("§eUtilize: /mute <jogador/#id> <tempo> <motivo>"));
+            source.sendMessage(legacySection().deserialize(" "));
+            source.sendMessage(legacySection().deserialize("§fExemplo: §7/mute Jogador 7d Spam no chat"));
+            source.sendMessage(legacySection().deserialize("§fExemplo: §7/mute #123 7d Spam no chat"));
+            source.sendMessage(legacySection().deserialize("§fTempos: §7s (segundos), m (minutos), h (horas), d (dias), w (semanas), M (meses), permanent"));
+            source.sendMessage(legacySection().deserialize(" "));
             return;
         }
 
@@ -59,7 +59,7 @@ public class MuteCommand implements SimpleCommand {
         final String reason = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
 
         if (reason.isEmpty()) {
-            source.sendMessage(Component.text("§cVocê precisa especificar um motivo para o silenciamento."));
+            source.sendMessage(legacySection().deserialize("§cVocê precisa especificar um motivo para o silenciamento."));
             return;
         }
 
@@ -77,27 +77,27 @@ public class MuteCommand implements SimpleCommand {
             try {
                 duration = TimeUtils.parseDuration(timeArg);
                 if (duration == null || duration <= 0) {
-                    source.sendMessage(Component.text("§cTempo inválido. Use: s, m, h, d, w, M ou 'permanent'."));
+                    source.sendMessage(legacySection().deserialize("§cTempo inválido. Use: s, m, h, d, w, M ou 'permanent'."));
                     return;
                 }
             } catch (Exception e) {
-                source.sendMessage(Component.text("§cTempo inválido. Use: s, m, h, d, w, M ou 'permanent'."));
+                source.sendMessage(legacySection().deserialize("§cTempo inválido. Use: s, m, h, d, w, M ou 'permanent'."));
                 return;
             }
         } else {
             duration = null;
         }
 
-        source.sendMessage(Component.text("§eBuscando jogador..."));
+        source.sendMessage(legacySection().deserialize("§eBuscando jogador..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
                 mutePlayer(source, result.getUUID(), result.getName(), reason, duration, punisherName);
             } else {
-                source.sendMessage(Component.text("§cJogador não encontrado."));
+                source.sendMessage(legacySection().deserialize("§cJogador não encontrado."));
             }
         }).exceptionally(ex -> {
-            source.sendMessage(Component.text("§cErro ao buscar jogador: " + ex.getMessage()));
+            source.sendMessage(legacySection().deserialize("§cErro ao buscar jogador: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });

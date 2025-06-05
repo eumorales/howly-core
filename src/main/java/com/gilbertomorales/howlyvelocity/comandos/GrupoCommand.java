@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class GrupoCommand implements SimpleCommand {
 
    private final ProxyServer server;
@@ -30,17 +32,17 @@ public class GrupoCommand implements SimpleCommand {
        CommandSource source = invocation.source();
 
        if (!(source instanceof Player sender)) {
-           source.sendMessage(Component.text("§cEste comando só pode ser executado por jogadores."));
+           source.sendMessage(legacySection().deserialize("§cEste comando só pode ser executado por jogadores."));
            return;
        }
 
        if (!sender.hasPermission("howly.gerente")) {
-           sender.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para executar este comando."));
+           sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para executar este comando."));
            return;
        }
 
        if (!groupManager.isLuckPermsAvailable()) {
-           sender.sendMessage(Component.text("§cLuckPerms não está disponível. Sistema de grupos desabilitado."));
+           sender.sendMessage(legacySection().deserialize("§cLuckPerms não está disponível. Sistema de grupos desabilitado."));
            return;
        }
 
@@ -66,11 +68,11 @@ public class GrupoCommand implements SimpleCommand {
        String groupName = args[2].toLowerCase();
 
        if (!groupManager.groupExists(groupName)) {
-           sender.sendMessage(Component.text("§cO grupo especificado não existe."));
+           sender.sendMessage(legacySection().deserialize("§cO grupo especificado não existe."));
            return;
        }
 
-       sender.sendMessage(Component.text("§eBuscando usuário..."));
+       sender.sendMessage(legacySection().deserialize("§eBuscando usuário..."));
 
        PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
            if (result != null) {
@@ -83,13 +85,13 @@ public class GrupoCommand implements SimpleCommand {
                        default -> sendUsage(sender);
                    }
                } else {
-                   sender.sendMessage(Component.text("§cO usuário precisa estar online para alterar grupos."));
+                   sender.sendMessage(legacySection().deserialize("§cO usuário precisa estar online para alterar grupos."));
                }
            } else {
-               sender.sendMessage(Component.text("§cUsuário não encontrado."));
+               sender.sendMessage(legacySection().deserialize("§cUsuário não encontrado."));
            }
        }).exceptionally(ex -> {
-           sender.sendMessage(Component.text("§cErro ao buscar usuário: " + ex.getMessage()));
+           sender.sendMessage(legacySection().deserialize("§cErro ao buscar usuário: " + ex.getMessage()));
            ex.printStackTrace();
            return null;
        });
@@ -98,13 +100,13 @@ public class GrupoCommand implements SimpleCommand {
    private void addPlayerToGroup(Player sender, Player target, String groupName) {
        groupManager.addPlayerToGroup(target, groupName).thenAccept(success -> {
            if (success) {
-               sender.sendMessage(Component.text("§aUsuário \"" + target.getUsername() + "\" adicionado ao grupo \"" + groupName + "\"."));
+               sender.sendMessage(legacySection().deserialize("§aUsuário \"" + target.getUsername() + "\" adicionado ao grupo \"" + groupName + "\"."));
                
                if (groupManager.isVipGroup(groupName)) {
                    sendVipTitle(target, groupName);
                }
            } else {
-               sender.sendMessage(Component.text("§cEste usuário já está no grupo \"" + groupName + "\" ou ocorreu um erro."));
+               sender.sendMessage(legacySection().deserialize("§cEste usuário já está no grupo \"" + groupName + "\" ou ocorreu um erro."));
            }
        });
    }
@@ -112,9 +114,9 @@ public class GrupoCommand implements SimpleCommand {
    private void removePlayerFromGroup(Player sender, Player target, String groupName) {
        groupManager.removePlayerFromGroup(target, groupName).thenAccept(success -> {
            if (success) {
-               sender.sendMessage(Component.text("§eUsuário \"" + target.getUsername() + "\" removido do grupo \"" + groupName + "\"."));
+               sender.sendMessage(legacySection().deserialize("§eUsuário \"" + target.getUsername() + "\" removido do grupo \"" + groupName + "\"."));
            } else {
-               sender.sendMessage(Component.text("§cEste usuário não pertence ao grupo \"" + groupName + "\" ou ocorreu um erro."));
+               sender.sendMessage(legacySection().deserialize("§cEste usuário não pertence ao grupo \"" + groupName + "\" ou ocorreu um erro."));
            }
        });
    }
@@ -122,22 +124,22 @@ public class GrupoCommand implements SimpleCommand {
    private void setPlayerGroup(Player sender, Player target, String groupName) {
        groupManager.setPlayerGroup(target, groupName).thenAccept(success -> {
            if (success) {
-               sender.sendMessage(Component.text("§eGrupo do usuário \"" + target.getUsername() + "\" definido como \"" + groupName + "\"."));
-               sender.sendMessage(Component.text("§eTodos os outros grupos foram removidos."));
+               sender.sendMessage(legacySection().deserialize("§eGrupo do usuário \"" + target.getUsername() + "\" definido como \"" + groupName + "\"."));
+               sender.sendMessage(legacySection().deserialize("§eTodos os outros grupos foram removidos."));
                
                if (groupManager.isVipGroup(groupName)) {
                    sendVipTitle(target, groupName);
                }
            } else {
-               sender.sendMessage(Component.text("§cOcorreu um erro ao definir o grupo do jogador."));
+               sender.sendMessage(legacySection().deserialize("§cOcorreu um erro ao definir o grupo do jogador."));
            }
        });
    }
 
    private void listGroups(Player sender) {
-       sender.sendMessage(Component.text(" "));
-       sender.sendMessage(Component.text("§eGrupos disponíveis:"));
-       sender.sendMessage(Component.text(" "));
+       sender.sendMessage(legacySection().deserialize(" "));
+       sender.sendMessage(legacySection().deserialize("§eGrupos disponíveis:"));
+       sender.sendMessage(legacySection().deserialize(" "));
        
        Map<String, GroupManager.GroupInfo> groups = groupManager.getAvailableGroups();
        
@@ -150,11 +152,11 @@ public class GrupoCommand implements SimpleCommand {
                    
                    if (!groupId.equals("default")) {
                        String vipIndicator = info.isVip() ? " §7(VIP)" : "";
-                       sender.sendMessage(Component.text("§7- " + info.getFormattedPrefix() + vipIndicator));
+                       sender.sendMessage(legacySection().deserialize("§7- " + info.getFormattedPrefix() + vipIndicator));
                    }
                });
        
-       sender.sendMessage(Component.text(" "));
+       sender.sendMessage(legacySection().deserialize(" "));
    }
 
    private void sendVipTitle(Player target, String groupName) {
@@ -174,14 +176,14 @@ public class GrupoCommand implements SimpleCommand {
    }
 
    private void sendUsage(Player sender) {
-       sender.sendMessage(Component.text(" "));
-       sender.sendMessage(Component.text("§eUso do comando /grupo:"));
-       sender.sendMessage(Component.text(" "));
-       sender.sendMessage(Component.text("§e/grupo listar §8- §7Lista todos os grupos disponíveis"));
-       sender.sendMessage(Component.text("§e/grupo adicionar <usuário/#id> <grupo> §8- §7Adiciona um usuário ao grupo"));
-       sender.sendMessage(Component.text("§e/grupo remover <usuário/#id> <grupo> §8- §7Remove um usuário do grupo"));
-       sender.sendMessage(Component.text("§e/grupo definir <usuário/#id> <grupo> §8- §7Define o grupo principal do usuário e remove todos os outros"));
-       sender.sendMessage(Component.text(" "));
+       sender.sendMessage(legacySection().deserialize(" "));
+       sender.sendMessage(legacySection().deserialize("§eUso do comando /grupo:"));
+       sender.sendMessage(legacySection().deserialize(" "));
+       sender.sendMessage(legacySection().deserialize("§e/grupo listar §8- §7Lista todos os grupos disponíveis"));
+       sender.sendMessage(legacySection().deserialize("§e/grupo adicionar <usuário/#id> <grupo> §8- §7Adiciona um usuário ao grupo"));
+       sender.sendMessage(legacySection().deserialize("§e/grupo remover <usuário/#id> <grupo> §8- §7Remove um usuário do grupo"));
+       sender.sendMessage(legacySection().deserialize("§e/grupo definir <usuário/#id> <grupo> §8- §7Define o grupo principal do usuário e remove todos os outros"));
+       sender.sendMessage(legacySection().deserialize(" "));
    }
 
    @Override

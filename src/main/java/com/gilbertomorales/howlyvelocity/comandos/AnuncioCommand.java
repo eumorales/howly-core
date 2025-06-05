@@ -8,6 +8,8 @@ import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class AnuncioCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -19,18 +21,18 @@ public class AnuncioCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         if (!(invocation.source() instanceof Player sender)) {
-            invocation.source().sendMessage(Component.text("§cApenas jogadores podem usar este comando."));
+            invocation.source().sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
         if (!sender.hasPermission("howly.coordenador")) {
-            sender.sendMessage(Component.text("§cVocê precisa ser do grupo Coordenador §cou superior para usar este comando."));
+            sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo Coordenador §cou superior para usar este comando."));
             return;
         }
 
         String[] args = invocation.arguments();
         if (args.length == 0) {
-            sender.sendMessage(Component.text("§cUtilize: /anuncio <mensagem>"));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /anuncio <mensagem>"));
             return;
         }
 
@@ -43,7 +45,7 @@ public class AnuncioCommand implements SimpleCommand {
             player.sendMessage(Component.text(" "));
         });
 
-        sender.sendMessage(Component.text("§aAnúncio enviado para todos os jogadores da rede."));
+        sender.sendMessage(legacySection().deserialize("§aAnúncio enviado para todos os jogadores da rede."));
     }
 
     @Override

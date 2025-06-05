@@ -4,9 +4,10 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.text.Component;
 
 import java.util.List;
+
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
 
 public class OnlineCommand implements SimpleCommand {
 
@@ -20,19 +21,19 @@ public class OnlineCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         if (!(invocation.source() instanceof Player sender)) {
-            invocation.source().sendMessage(Component.text("§cApenas jogadores podem usar este comando."));
+            invocation.source().sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
         if (!sender.hasPermission("howly.ajudante")) {
-            sender.sendMessage(Component.text("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
+            sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
             return;
         }
 
         int totalPlayers = server.getPlayerCount();
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§eEstatísticas de usuários por servidor conectado:"));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§eEstatísticas de usuários por servidor conectado:"));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         int colorIndex = 0;
         for (RegisteredServer registeredServer : server.getAllServers()) {
@@ -52,15 +53,15 @@ public class OnlineCommand implements SimpleCommand {
             }
 
             String label = playerCount == 1 ? "usuário" : "usuários";
-            sender.sendMessage(Component.text(String.format("§f%s: §7%d %s %s §7%.1f%%",
+            sender.sendMessage(legacySection().deserialize(String.format("§f%s: §7%d %s %s §7%.1f%%",
                     serverName, playerCount, label, squares.toString(), percentage)));
 
             colorIndex++;
         }
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fTotal de usuários conectados: §a" + totalPlayers));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fTotal de usuários conectados: §a" + totalPlayers));
+        sender.sendMessage(legacySection().deserialize(" "));
     }
 
     @Override

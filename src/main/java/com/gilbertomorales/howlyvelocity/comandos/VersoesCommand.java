@@ -9,6 +9,8 @@ import net.kyori.adventure.text.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class VersoesCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -24,14 +26,14 @@ public class VersoesCommand implements SimpleCommand {
 
         if (sender instanceof Player player) {
             if (!player.hasPermission("howly.gerente")) {
-                sender.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
+                sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para usar este comando."));
                 return;
             }
         }
 
         Collection<Player> players = server.getAllPlayers();
         if (players.isEmpty()) {
-            sender.sendMessage(Component.text("§cNenhum jogador online."));
+            sender.sendMessage(legacySection().deserialize("§cNenhum jogador online."));
             return;
         }
 
@@ -49,9 +51,9 @@ public class VersoesCommand implements SimpleCommand {
 
         int totalPlayers = players.size();
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§eEstatísticas de uso de versão dos usuários conectados:"));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§eEstatísticas de uso de versão dos usuários conectados:"));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         int colorIndex = 0;
         for (Map.Entry<String, Integer> entry : sortedVersions) {
@@ -72,7 +74,7 @@ public class VersoesCommand implements SimpleCommand {
                 squares.append("§8■");
             }
 
-            sender.sendMessage(Component.text(String.format("§fv%s: §7%d %s %s §7%.1f%%",
+            sender.sendMessage(legacySection().deserialize(String.format("§fv%s: §7%d %s %s §7%.1f%%",
                     version,
                     count,
                     count == 1 ? "usuário" : "usuários",
@@ -83,7 +85,7 @@ public class VersoesCommand implements SimpleCommand {
             colorIndex++;
         }
         
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
     }
 
     @Override

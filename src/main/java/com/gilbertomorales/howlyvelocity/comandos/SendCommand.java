@@ -15,6 +15,8 @@ import java.util.Optional;
 import com.gilbertomorales.howlyvelocity.api.HowlyAPI;
 import com.gilbertomorales.howlyvelocity.managers.GroupManager;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class SendCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -31,14 +33,14 @@ public class SendCommand implements SimpleCommand {
 
         if (sender instanceof Player player) {
             if (!player.hasPermission("howly.coordenador")) {
-                sender.sendMessage(Component.text("§cVocê precisa ser do grupo §cCoordenador §cou superior para usar este comando."));
+                sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §cCoordenador §cou superior para usar este comando."));
                 return;
             }
         }
 
         String[] args = invocation.arguments();
         if (args.length < 2) {
-            sender.sendMessage(Component.text("§cUtilize: /send <jogador/#id> <servidor>"));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /send <jogador/#id> <servidor>"));
             return;
         }
 
@@ -47,12 +49,12 @@ public class SendCommand implements SimpleCommand {
 
         Optional<RegisteredServer> serverOptional = server.getServer(serverName);
         if (serverOptional.isEmpty()) {
-            sender.sendMessage(Component.text("§cServidor não encontrado."));
+            sender.sendMessage(legacySection().deserialize("§cServidor não encontrado."));
             return;
         }
 
         RegisteredServer targetServer = serverOptional.get();
-        sender.sendMessage(Component.text("§eBuscando usuário..."));
+        sender.sendMessage(legacySection().deserialize("§eBuscando usuário..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
@@ -65,16 +67,16 @@ public class SendCommand implements SimpleCommand {
                     String senderName = sender instanceof Player ? groupManager.getFormattedPlayerName((Player) sender) : "§4[CONSOLE]";
                     String targetName = groupManager.getFormattedPlayerName(target);
                     
-                    sender.sendMessage(Component.text("§aJogador " + targetName + " §aenviado para o servidor §e" + targetServer.getServerInfo().getName()));
-                    target.sendMessage(Component.text("§aVocê foi enviado para o servidor §e" + targetServer.getServerInfo().getName() + " §apor " + senderName));
+                    sender.sendMessage(legacySection().deserialize("§aJogador " + targetName + " §aenviado para o servidor §e" + targetServer.getServerInfo().getName()));
+                    target.sendMessage(legacySection().deserialize("§aVocê foi enviado para o servidor §e" + targetServer.getServerInfo().getName() + " §apor " + senderName));
                 } else {
-                    sender.sendMessage(Component.text("§cO usuário precisa estar online para ser enviado."));
+                    sender.sendMessage(legacySection().deserialize("§cO usuário precisa estar online para ser enviado."));
                 }
             } else {
-                sender.sendMessage(Component.text("§cUsuário não encontrado."));
+                sender.sendMessage(legacySection().deserialize("§cUsuário não encontrado."));
             }
         }).exceptionally(ex -> {
-            sender.sendMessage(Component.text("§cErro ao buscar usuário: " + ex.getMessage()));
+            sender.sendMessage(legacySection().deserialize("§cErro ao buscar usuário: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });

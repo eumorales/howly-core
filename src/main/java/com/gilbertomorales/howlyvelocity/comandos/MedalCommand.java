@@ -12,6 +12,8 @@ import net.kyori.adventure.text.format.TextColor;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class MedalCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -27,7 +29,7 @@ public class MedalCommand implements SimpleCommand {
         CommandSource source = invocation.source();
 
         if (!(source instanceof Player player)) {
-            source.sendMessage(Component.text("§cApenas jogadores podem usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
@@ -44,7 +46,7 @@ public class MedalCommand implements SimpleCommand {
         // Comando para remover medalha
         if (subCommand.equals("remover") || subCommand.equals("remove")) {
             medalManager.removePlayerMedal(player.getUniqueId());
-            player.sendMessage(Component.text("§aMedalha removida com sucesso! Agora você não possui nenhuma medalha."));
+            player.sendMessage(legacySection().deserialize("§aMedalha removida com sucesso! Agora você não possui nenhuma medalha."));
             return;
         }
 
@@ -52,7 +54,7 @@ public class MedalCommand implements SimpleCommand {
         String medalId = subCommand;
 
         if (!medalManager.hasMedal(medalId)) {
-            player.sendMessage(Component.text("§cMedalha não encontrada. Use /medalha para ver as medalhas disponíveis."));
+            player.sendMessage(legacySection().deserialize("§cMedalha não encontrada. Use /medalha para ver as medalhas disponíveis."));
             return;
         }
 
@@ -60,7 +62,7 @@ public class MedalCommand implements SimpleCommand {
 
         // Verificar permissão
         if (!medalInfo.getPermission().isEmpty() && !player.hasPermission(medalInfo.getPermission())) {
-            player.sendMessage(Component.text("§cVocê não tem permissão para usar esta medalha."));
+            player.sendMessage(legacySection().deserialize("§cVocê não tem permissão para usar esta medalha."));
             return;
         }
 
@@ -68,12 +70,12 @@ public class MedalCommand implements SimpleCommand {
         medalManager.setPlayerMedal(player.getUniqueId(), medalId);
 
         if (medalId.equals("nenhuma")) {
-            player.sendMessage(Component.text("§aMedalha removida com sucesso!"));
+            player.sendMessage(legacySection().deserialize("§aMedalha removida com sucesso!"));
         } else {
             Component medalComponent = Component.text(medalInfo.getSymbol()).color(CoresUtils.getTextColorFromCode(medalInfo.getColor()));
-            Component message = Component.text("§aMedalha alterada para ")
+            Component message = legacySection().deserialize("§aMedalha alterada para ")
                     .append(medalComponent)
-                    .append(Component.text(" §acom sucesso!"));
+                    .append(legacySection().deserialize(" §acom sucesso!"));
 
             player.sendMessage(message);
         }
@@ -83,14 +85,14 @@ public class MedalCommand implements SimpleCommand {
         List<String> availableMedals = medalManager.getPlayerAvailableMedals(player);
 
         if (availableMedals.isEmpty()) {
-            player.sendMessage(Component.text("§cVocê não tem nenhuma medalha disponível."));
+            player.sendMessage(legacySection().deserialize("§cVocê não tem nenhuma medalha disponível."));
             return;
         }
 
-        player.sendMessage(Component.text(""));
-        player.sendMessage(Component.text("§eUse /medalha <nome> para selecionar uma medalha"));
-        player.sendMessage(Component.text("§eUse /medalha remover para remover sua medalha atual"));
-        player.sendMessage(Component.text(""));
+        player.sendMessage(legacySection().deserialize(""));
+        player.sendMessage(legacySection().deserialize("§eUse /medalha <nome> para selecionar uma medalha"));
+        player.sendMessage(legacySection().deserialize("§eUse /medalha remover para remover sua medalha atual"));
+        player.sendMessage(legacySection().deserialize(""));
 
         // Mostrar medalha atual
         String currentMedal = medalManager.getCurrentPlayerMedal(player.getUniqueId());
@@ -98,10 +100,10 @@ public class MedalCommand implements SimpleCommand {
             MedalManager.MedalInfo currentMedalInfo = medalManager.getMedalInfo(currentMedal);
             if (currentMedalInfo != null) {
                 Component medalComponent = Component.text(currentMedalInfo.getSymbol()).color(CoresUtils.getTextColorFromCode(currentMedalInfo.getColor()));
-                player.sendMessage(Component.text("§fMedalha atual: ").append(medalComponent));
+                player.sendMessage(legacySection().deserialize("§fMedalha atual: ").append(medalComponent));
             }
         } else {
-            player.sendMessage(Component.text("§fMedalha atual: §7Nenhuma"));
+            player.sendMessage(legacySection().deserialize("§fMedalha atual: §7Nenhuma"));
         }
 
         // Listar medalhas disponíveis
@@ -114,7 +116,7 @@ public class MedalCommand implements SimpleCommand {
             }
         }
 
-        player.sendMessage(Component.text("§fMedalhas disponíveis: " + medalsJoiner.toString()));
+        player.sendMessage(legacySection().deserialize("§fMedalhas disponíveis: " + medalsJoiner.toString()));
     }
 
     private String capitalizeFirst(String str) {

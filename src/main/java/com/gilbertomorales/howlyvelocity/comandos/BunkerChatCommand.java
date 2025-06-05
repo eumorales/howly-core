@@ -5,10 +5,11 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
 
 public class BunkerChatCommand implements SimpleCommand {
 
@@ -26,12 +27,12 @@ public class BunkerChatCommand implements SimpleCommand {
         CommandSource sender = invocation.source();
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("§cApenas jogadores podem executar este comando."));
+            sender.sendMessage(legacySection().deserialize("§cApenas jogadores podem executar este comando."));
             return;
         }
 
         if (!player.hasPermission("howly.gerente")) {
-            player.sendMessage(Component.text("§cVocê precisa ser do grupo §4Gerente §cou superior para executar este comando."));
+            player.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §4Gerente §cou superior para executar este comando."));
             return;
         }
 
@@ -40,22 +41,22 @@ public class BunkerChatCommand implements SimpleCommand {
         if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
             if (restricaoChatBunker.contains(player.getUsername())) {
                 restricaoChatBunker.remove(player.getUsername());
-                player.sendMessage(Component.text("§aAgora você pode enviar e receber mensagens no chat bunker."));
+                player.sendMessage(legacySection().deserialize("§aAgora você pode enviar e receber mensagens no chat bunker."));
             } else {
                 restricaoChatBunker.add(player.getUsername());
-                player.sendMessage(Component.text("§eO chat bunker foi desativado para você."));
+                player.sendMessage(legacySection().deserialize("§eO chat bunker foi desativado para você."));
             }
             return;
         }
 
         if (restricaoChatBunker.contains(player.getUsername())) {
-            player.sendMessage(Component.text("§cVocê está com o chat bunker desabilitado!"));
-            player.sendMessage(Component.text("§cUtilize /b toggle para ativá-lo."));
+            player.sendMessage(legacySection().deserialize("§cVocê está com o chat bunker desabilitado!"));
+            player.sendMessage(legacySection().deserialize("§cUtilize /b toggle para ativá-lo."));
             return;
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("§cUso correto: /b <\"mensagem\"/toggle>"));
+            player.sendMessage(legacySection().deserialize("§cUso correto: /b <\"mensagem\"/toggle>"));
             return;
         }
 
@@ -71,7 +72,7 @@ public class BunkerChatCommand implements SimpleCommand {
         for (Player gerente : server.getAllPlayers()) {
             if (gerente.hasPermission("howly.gerente")) {
                 if (!restricaoChatBunker.contains(gerente.getUsername())) {
-                    gerente.sendMessage(Component.text("§c§l[B] §7" + formattedName + ": §f" + message));
+                    gerente.sendMessage(legacySection().deserialize("§c§l[B] §7" + formattedName + ": §f" + message));
                 }
             }
         }

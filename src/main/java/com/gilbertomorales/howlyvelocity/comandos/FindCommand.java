@@ -12,6 +12,8 @@ import com.gilbertomorales.howlyvelocity.managers.GroupManager;
 
 import java.util.List;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class FindCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -28,19 +30,19 @@ public class FindCommand implements SimpleCommand {
 
         if (sender instanceof Player player) {
             if (!player.hasPermission("howly.ajudante")) {
-                sender.sendMessage(Component.text("§cVocê precisa ser do grupo §cAjudante §cou superior para usar este comando."));
+                sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
                 return;
             }
         }
 
         String[] args = invocation.arguments();
         if (args.length == 0) {
-            sender.sendMessage(Component.text("§cUtilize: /find <jogador/#id>"));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /find <jogador/#id>"));
             return;
         }
 
         String targetIdentifier = args[0];
-        sender.sendMessage(Component.text("§eBuscando usuário..."));
+        sender.sendMessage(legacySection().deserialize("§eBuscando usuário..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
@@ -53,15 +55,15 @@ public class FindCommand implements SimpleCommand {
                     GroupManager groupManager = HowlyAPI.getInstance().getPlugin().getGroupManager();
                     String formattedName = groupManager.getFormattedPlayerName(target);
 
-                    sender.sendMessage(Component.text("§eUsuário " + formattedName + " §eestá conectado em §n" + serverName + "§e."));
+                    sender.sendMessage(legacySection().deserialize("§eUsuário " + formattedName + " §eestá conectado em §n" + serverName + "§e."));
                 } else {
-                    sender.sendMessage(Component.text("§cO usuário §f" + result.getName() + " §cestá offline."));
+                    sender.sendMessage(legacySection().deserialize("§cO usuário §f" + result.getName() + " §cestá offline."));
                 }
             } else {
-                sender.sendMessage(Component.text("§cUsuário não encontrado."));
+                sender.sendMessage(legacySection().deserialize("§cUsuário não encontrado."));
             }
         }).exceptionally(ex -> {
-            sender.sendMessage(Component.text("§cErro ao buscar usuário: " + ex.getMessage()));
+            sender.sendMessage(legacySection().deserialize("§cErro ao buscar usuário: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });

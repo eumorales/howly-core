@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class IgnorarCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -35,7 +37,7 @@ public class IgnorarCommand implements SimpleCommand {
         CommandSource source = invocation.source();
 
         if (!(source instanceof Player player)) {
-            source.sendMessage(Component.text("§cApenas jogadores podem usar este comando."));
+            source.sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
@@ -59,7 +61,7 @@ public class IgnorarCommand implements SimpleCommand {
 
     private void handleAdd(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(Component.text("§cUtilize: /ignorar add <jogador/#id>"));
+            player.sendMessage(legacySection().deserialize("§cUtilize: /ignorar add <jogador/#id>"));
             return;
         }
 
@@ -67,18 +69,18 @@ public class IgnorarCommand implements SimpleCommand {
 
         if (targetIdentifier.equals(player.getUsername()) || 
             (targetIdentifier.startsWith("#") && isPlayerOwnId(player, targetIdentifier))) {
-            player.sendMessage(Component.text("§cVocê não pode ignorar a si mesmo."));
+            player.sendMessage(legacySection().deserialize("§cVocê não pode ignorar a si mesmo."));
             return;
         }
 
-        player.sendMessage(Component.text("§eBuscando usuário..."));
+        player.sendMessage(legacySection().deserialize("§eBuscando usuário..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
                 UUID targetUuid = result.getUUID();
                 
                 if (targetUuid.equals(player.getUniqueId())) {
-                    player.sendMessage(Component.text("§cVocê não pode ignorar a si mesmo."));
+                    player.sendMessage(legacySection().deserialize("§cVocê não pode ignorar a si mesmo."));
                     return;
                 }
 
@@ -89,18 +91,18 @@ public class IgnorarCommand implements SimpleCommand {
                         Player target = result.getOnlinePlayer();
                         String formattedName = tagManager.getPlayerTag(target) + " " +
                                 tagManager.getPlayerNameColor(target) + target.getUsername();
-                        player.sendMessage(Component.text("§aVocê agora está ignorando " + formattedName + "§a."));
+                        player.sendMessage(legacySection().deserialize("§aVocê agora está ignorando " + formattedName + "§a."));
                     } else {
-                        player.sendMessage(Component.text("§aVocê agora está ignorando §f" + result.getName() + "§a."));
+                        player.sendMessage(legacySection().deserialize("§aVocê agora está ignorando §f" + result.getName() + "§a."));
                     }
                 } else {
-                    player.sendMessage(Component.text("§cVocê já está ignorando este jogador."));
+                    player.sendMessage(legacySection().deserialize("§cVocê já está ignorando este jogador."));
                 }
             } else {
-                player.sendMessage(Component.text("§cUsuário não encontrado."));
+                player.sendMessage(legacySection().deserialize("§cUsuário não encontrado."));
             }
         }).exceptionally(ex -> {
-            player.sendMessage(Component.text("§cErro ao buscar usuário: " + ex.getMessage()));
+            player.sendMessage(legacySection().deserialize("§cErro ao buscar usuário: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });
@@ -108,12 +110,12 @@ public class IgnorarCommand implements SimpleCommand {
 
     private void handleRemove(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(Component.text("§cUtilize: /ignorar remover <jogador/#id>"));
+            player.sendMessage(legacySection().deserialize("§cUtilize: /ignorar remover <jogador/#id>"));
             return;
         }
 
         String targetIdentifier = args[1];
-        player.sendMessage(Component.text("§eBuscando usuário..."));
+        player.sendMessage(legacySection().deserialize("§eBuscando usuário..."));
 
         PlayerUtils.findPlayer(server, targetIdentifier).thenAccept(result -> {
             if (result != null) {
@@ -125,18 +127,18 @@ public class IgnorarCommand implements SimpleCommand {
                         Player target = result.getOnlinePlayer();
                         String formattedName = tagManager.getPlayerTag(target) + " " +
                                 tagManager.getPlayerNameColor(target) + target.getUsername();
-                        player.sendMessage(Component.text("§aVocê não está mais ignorando " + formattedName + "§a."));
+                        player.sendMessage(legacySection().deserialize("§aVocê não está mais ignorando " + formattedName + "§a."));
                     } else {
-                        player.sendMessage(Component.text("§aVocê não está mais ignorando §f" + result.getName() + "§a."));
+                        player.sendMessage(legacySection().deserialize("§aVocê não está mais ignorando §f" + result.getName() + "§a."));
                     }
                 } else {
-                    player.sendMessage(Component.text("§cVocê não estava ignorando este jogador."));
+                    player.sendMessage(legacySection().deserialize("§cVocê não estava ignorando este jogador."));
                 }
             } else {
-                player.sendMessage(Component.text("§cUsuário não encontrado."));
+                player.sendMessage(legacySection().deserialize("§cUsuário não encontrado."));
             }
         }).exceptionally(ex -> {
-            player.sendMessage(Component.text("§cErro ao buscar usuário: " + ex.getMessage()));
+            player.sendMessage(legacySection().deserialize("§cErro ao buscar usuário: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });
@@ -146,11 +148,11 @@ public class IgnorarCommand implements SimpleCommand {
         Set<UUID> ignoredPlayers = ignoreManager.getIgnoredPlayers(player.getUniqueId());
 
         if (ignoredPlayers.isEmpty()) {
-            player.sendMessage(Component.text("§cVocê não está ignorando nenhum jogador."));
+            player.sendMessage(legacySection().deserialize("§cVocê não está ignorando nenhum jogador."));
             return;
         }
 
-        player.sendMessage(Component.text("§eJogadores ignorados (" + ignoredPlayers.size() + "):"));
+        player.sendMessage(legacySection().deserialize("§eJogadores ignorados (" + ignoredPlayers.size() + "):"));
 
         // Buscar nomes dos jogadores ignorados
         for (UUID ignoredUuid : ignoredPlayers) {
@@ -158,11 +160,11 @@ public class IgnorarCommand implements SimpleCommand {
             if (ignoredPlayer != null) {
                 String formattedName = tagManager.getPlayerTag(ignoredPlayer) + " " +
                         tagManager.getPlayerNameColor(ignoredPlayer) + ignoredPlayer.getUsername();
-                player.sendMessage(Component.text("§7- " + formattedName + " §a(Online)"));
+                player.sendMessage(legacySection().deserialize("§7- " + formattedName + " §a(Online)"));
             } else {
                 playerDataManager.getPlayerName(ignoredUuid).thenAccept(name -> {
                     if (name != null) {
-                        player.sendMessage(Component.text("§7- §f" + name + " §c(Offline)"));
+                        player.sendMessage(legacySection().deserialize("§7- §f" + name + " §c(Offline)"));
                     }
                 });
             }
@@ -173,12 +175,12 @@ public class IgnorarCommand implements SimpleCommand {
         Set<UUID> ignoredPlayers = ignoreManager.getIgnoredPlayers(player.getUniqueId());
 
         if (ignoredPlayers.isEmpty()) {
-            player.sendMessage(Component.text("§cVocê não está ignorando nenhum jogador."));
+            player.sendMessage(legacySection().deserialize("§cVocê não está ignorando nenhum jogador."));
             return;
         }
 
         ignoreManager.clearIgnoreList(player.getUniqueId());
-        player.sendMessage(Component.text("§aLista de jogadores ignorados limpa com sucesso!"));
+        player.sendMessage(legacySection().deserialize("§aLista de jogadores ignorados limpa com sucesso!"));
     }
 
     private boolean isPlayerOwnId(Player player, String idString) {
@@ -192,12 +194,12 @@ public class IgnorarCommand implements SimpleCommand {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage(Component.text(""));
-        player.sendMessage(Component.text("§e/ignorar add <jogador/#id> §8- §7Ignora as mensagens de um jogador"));
-        player.sendMessage(Component.text("§e/ignorar remover <jogador/#id> §8- §7Deixa de ignorar um jogador"));
-        player.sendMessage(Component.text("§e/ignorar lista §8- §7Exibe a lista de jogadores ignorados"));
-        player.sendMessage(Component.text("§e/ignorar limpar §8- §7Remove todos os jogadores da lista de ignorados"));
-        player.sendMessage(Component.text(""));
+        player.sendMessage(legacySection().deserialize(""));
+        player.sendMessage(legacySection().deserialize("§e/ignorar add <jogador/#id> §8- §7Ignora as mensagens de um jogador"));
+        player.sendMessage(legacySection().deserialize("§e/ignorar remover <jogador/#id> §8- §7Deixa de ignorar um jogador"));
+        player.sendMessage(legacySection().deserialize("§e/ignorar lista §8- §7Exibe a lista de jogadores ignorados"));
+        player.sendMessage(legacySection().deserialize("§e/ignorar limpar §8- §7Remove todos os jogadores da lista de ignorados"));
+        player.sendMessage(legacySection().deserialize(""));
     }
 
     @Override

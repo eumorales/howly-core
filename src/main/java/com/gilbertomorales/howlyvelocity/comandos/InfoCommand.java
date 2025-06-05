@@ -17,6 +17,8 @@ import com.gilbertomorales.howlyvelocity.managers.GroupManager;
 import java.util.List;
 import java.util.Optional;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class InfoCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -41,14 +43,14 @@ public class InfoCommand implements SimpleCommand {
 
         if (sender instanceof Player player) {
             if (!player.hasPermission("howly.ajudante")) {
-                sender.sendMessage(Component.text("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
+                sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
                 return;
             }
         }
 
         String[] args = invocation.arguments();
         if (args.length == 0) {
-            sender.sendMessage(Component.text("§cUtilize: /info <jogador> ou /info #<id>"));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /info <jogador> ou /info #<id>"));
             return;
         }
 
@@ -60,7 +62,7 @@ public class InfoCommand implements SimpleCommand {
                 int playerId = Integer.parseInt(targetIdentifier.substring(1));
                 showPlayerInfoById(sender, playerId);
             } catch (NumberFormatException e) {
-                sender.sendMessage(Component.text("§cID inválido. Use /info #<número>"));
+                sender.sendMessage(legacySection().deserialize("§cID inválido. Use /info #<número>"));
             }
             return;
         }
@@ -73,7 +75,7 @@ public class InfoCommand implements SimpleCommand {
             showPlayerInfo(sender, target, target.getUsername());
         } else {
             // Jogador está offline, buscar no banco de dados
-            sender.sendMessage(Component.text("§eBuscando jogador no banco de dados..."));
+            sender.sendMessage(legacySection().deserialize("§eBuscando jogador no banco de dados..."));
 
             playerDataManager.getPlayerUUID(targetIdentifier).thenAccept(uuid -> {
                 if (uuid != null) {
@@ -82,19 +84,19 @@ public class InfoCommand implements SimpleCommand {
                         if (playerInfo != null) {
                             showOfflinePlayerInfo(sender, playerInfo);
                         } else {
-                            sender.sendMessage(Component.text("§cErro ao carregar informações do jogador."));
+                            sender.sendMessage(legacySection().deserialize("§cErro ao carregar informações do jogador."));
                         }
                     });
                 } else {
                     // Jogador não encontrado
-                    sender.sendMessage(Component.text("§cJogador não encontrado no banco de dados."));
+                    sender.sendMessage(legacySection().deserialize("§cJogador não encontrado no banco de dados."));
                 }
             });
         }
     }
 
     private void showPlayerInfoById(CommandSource sender, int playerId) {
-        sender.sendMessage(Component.text("§eBuscando jogador com ID #" + playerId + "..."));
+        sender.sendMessage(legacySection().deserialize("§eBuscando jogador com ID #" + playerId + "..."));
 
         playerDataManager.getPlayerInfoById(playerId).thenAccept(playerInfo -> {
             if (playerInfo != null) {
@@ -106,10 +108,10 @@ public class InfoCommand implements SimpleCommand {
                     showOfflinePlayerInfo(sender, playerInfo);
                 }
             } else {
-                sender.sendMessage(Component.text("§cJogador com ID #" + playerId + " não encontrado."));
+                sender.sendMessage(legacySection().deserialize("§cJogador com ID #" + playerId + " não encontrado."));
             }
         }).exceptionally(ex -> {
-            sender.sendMessage(Component.text("§cErro ao buscar jogador: " + ex.getMessage()));
+            sender.sendMessage(legacySection().deserialize("§cErro ao buscar jogador: " + ex.getMessage()));
             ex.printStackTrace();
             return null;
         });
@@ -140,46 +142,46 @@ public class InfoCommand implements SimpleCommand {
         GroupManager groupManager = HowlyAPI.getInstance().getPlugin().getGroupManager();
         String formattedGroups = groupManager.getFormattedPlayerGroups(target);
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§eInformações:"));
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fUsuário: §7" + targetName));
-        sender.sendMessage(Component.text("§fGrupo(s): " + formattedGroups));
-        sender.sendMessage(Component.text("§fID: §7#" + playerId));
-        sender.sendMessage(Component.text("§fUUID: §7" + target.getUniqueId().toString()));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§eInformações:"));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + targetName));
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        sender.sendMessage(legacySection().deserialize("§fID: §7#" + playerId));
+        sender.sendMessage(legacySection().deserialize("§fUUID: §7" + target.getUniqueId().toString()));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         String currentTagId = tagManager.getCurrentPlayerTag(target.getUniqueId());
         if (currentTagId == null || currentTagId.isEmpty()) {
-            sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
         } else {
             TagManager.TagInfo tagInfo = tagManager.getTagInfo(currentTagId);
             if (tagInfo != null) {
-                sender.sendMessage(Component.text("§fTag: " + tagInfo.getDisplay()));
+                sender.sendMessage(legacySection().deserialize("§fTag: " + tagInfo.getDisplay()));
             } else {
-                sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+                sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
             }
         }
 
         // Buscar medalha do jogador
         String medal = medalManager.getPlayerMedal(target);
         if (medal.isEmpty()) {
-            sender.sendMessage(Component.text("§fMedalha: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: §7Nenhuma"));
         } else {
-            sender.sendMessage(Component.text("§fMedalha: " + medal));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: " + medal));
         }
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fConexão: §7" + serverName));
-        sender.sendMessage(Component.text("§fVersão: §7" + target.getProtocolVersion().getName()));
-        sender.sendMessage(Component.text("§fPing: §7" + target.getPing() + "ms"));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fConexão: §7" + serverName));
+        sender.sendMessage(legacySection().deserialize("§fVersão: §7" + target.getProtocolVersion().getName()));
+        sender.sendMessage(legacySection().deserialize("§fPing: §7" + target.getPing() + "ms"));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         // Buscar tempo online
         playtimeManager.getPlayerPlaytime(target.getUniqueId()).thenAccept(playtime -> {
             String formattedTime = playtimeManager.formatPlaytime(playtime);
-            sender.sendMessage(Component.text("§fTempo online: §7" + formattedTime));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7" + formattedTime));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             // Buscar informações de login
             playerDataManager.getPlayerLoginInfo(target.getUniqueId()).thenAccept(loginInfo -> {
@@ -187,21 +189,21 @@ public class InfoCommand implements SimpleCommand {
                     long firstJoin = loginInfo[0];
                     long lastJoin = loginInfo[1];
 
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
                 } else {
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7Desconhecido"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7Agora"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7Desconhecido"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7Agora"));
                 }
-                sender.sendMessage(Component.text(" "));
+                sender.sendMessage(legacySection().deserialize(" "));
 
                 // Verificar punições
                 checkPunishments(sender, target.getUniqueId());
             });
         }).exceptionally(ex -> {
             // Em caso de erro, continuar com o resto das informações
-            sender.sendMessage(Component.text("§fTempo online: §7Erro ao carregar"));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7Erro ao carregar"));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             // Buscar informações de login
             playerDataManager.getPlayerLoginInfo(target.getUniqueId()).thenAccept(loginInfo -> {
@@ -209,13 +211,13 @@ public class InfoCommand implements SimpleCommand {
                     long firstJoin = loginInfo[0];
                     long lastJoin = loginInfo[1];
 
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
                 } else {
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7Desconhecido"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7Agora"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7Desconhecido"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7Agora"));
                 }
-                sender.sendMessage(Component.text(" "));
+                sender.sendMessage(legacySection().deserialize(" "));
 
                 // Verificar punições
                 checkPunishments(sender, target.getUniqueId());
@@ -234,46 +236,46 @@ public class InfoCommand implements SimpleCommand {
         GroupManager groupManager = HowlyAPI.getInstance().getPlugin().getGroupManager();
         String formattedGroups = groupManager.getFormattedPlayerGroups(target);
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§eInformações:"));
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fUsuário: §7" + targetName));
-        sender.sendMessage(Component.text("§fGrupo(s): " + formattedGroups));
-        sender.sendMessage(Component.text("§fID: §7Carregando..."));
-        sender.sendMessage(Component.text("§fUUID: §7" + target.getUniqueId().toString()));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§eInformações:"));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + targetName));
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        sender.sendMessage(legacySection().deserialize("§fID: §7Carregando..."));
+        sender.sendMessage(legacySection().deserialize("§fUUID: §7" + target.getUniqueId().toString()));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         String currentTagId = tagManager.getCurrentPlayerTag(target.getUniqueId());
         if (currentTagId == null || currentTagId.isEmpty()) {
-            sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
         } else {
             TagManager.TagInfo tagInfo = tagManager.getTagInfo(currentTagId);
             if (tagInfo != null) {
-                sender.sendMessage(Component.text("§fTag: " + tagInfo.getDisplay()));
+                sender.sendMessage(legacySection().deserialize("§fTag: " + tagInfo.getDisplay()));
             } else {
-                sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+                sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
             }
         }
 
         // Buscar medalha do jogador
         String medal = medalManager.getPlayerMedal(target);
         if (medal.isEmpty()) {
-            sender.sendMessage(Component.text("§fMedalha: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: §7Nenhuma"));
         } else {
-            sender.sendMessage(Component.text("§fMedalha: " + medal));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: " + medal));
         }
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fConexão: §7" + serverName));
-        sender.sendMessage(Component.text("§fVersão: §7" + target.getProtocolVersion().getName()));
-        sender.sendMessage(Component.text("§fPing: §7" + target.getPing() + "ms"));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fConexão: §7" + serverName));
+        sender.sendMessage(legacySection().deserialize("§fVersão: §7" + target.getProtocolVersion().getName()));
+        sender.sendMessage(legacySection().deserialize("§fPing: §7" + target.getPing() + "ms"));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         // Buscar tempo online
         playtimeManager.getPlayerPlaytime(target.getUniqueId()).thenAccept(playtime -> {
             String formattedTime = playtimeManager.formatPlaytime(playtime);
-            sender.sendMessage(Component.text("§fTempo online: §7" + formattedTime));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7" + formattedTime));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             // Buscar informações de login
             playerDataManager.getPlayerLoginInfo(target.getUniqueId()).thenAccept(loginInfo -> {
@@ -281,21 +283,21 @@ public class InfoCommand implements SimpleCommand {
                     long firstJoin = loginInfo[0];
                     long lastJoin = loginInfo[1];
 
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
                 } else {
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7Desconhecido"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7Agora"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7Desconhecido"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7Agora"));
                 }
-                sender.sendMessage(Component.text(" "));
+                sender.sendMessage(legacySection().deserialize(" "));
 
                 // Verificar punições
                 checkPunishments(sender, target.getUniqueId());
             });
         }).exceptionally(ex -> {
             // Em caso de erro, continuar com o resto das informações
-            sender.sendMessage(Component.text("§fTempo online: §7Erro ao carregar"));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7Erro ao carregar"));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             // Buscar informações de login
             playerDataManager.getPlayerLoginInfo(target.getUniqueId()).thenAccept(loginInfo -> {
@@ -303,13 +305,13 @@ public class InfoCommand implements SimpleCommand {
                     long firstJoin = loginInfo[0];
                     long lastJoin = loginInfo[1];
 
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
                 } else {
-                    sender.sendMessage(Component.text("§fPrimeiro login: §7Desconhecido"));
-                    sender.sendMessage(Component.text("§fÚltimo login: §7Agora"));
+                    sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7Desconhecido"));
+                    sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7Agora"));
                 }
-                sender.sendMessage(Component.text(" "));
+                sender.sendMessage(legacySection().deserialize(" "));
 
                 // Verificar punições
                 checkPunishments(sender, target.getUniqueId());
@@ -324,67 +326,67 @@ public class InfoCommand implements SimpleCommand {
         GroupManager groupManager = HowlyAPI.getInstance().getPlugin().getGroupManager();
         String formattedGroups = groupManager.getFormattedPlayerGroupsByUUID(playerInfo.getUuid());
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§eInformações:"));
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fUsuário: §7" + playerInfo.getName()));
-        sender.sendMessage(Component.text("§fGrupo(s): " + formattedGroups));
-        sender.sendMessage(Component.text("§fID: §7#" + playerInfo.getId()));
-        sender.sendMessage(Component.text("§fUUID: §7" + playerInfo.getUuid().toString()));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§eInformações:"));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + playerInfo.getName()));
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        sender.sendMessage(legacySection().deserialize("§fID: §7#" + playerInfo.getId()));
+        sender.sendMessage(legacySection().deserialize("§fUUID: §7" + playerInfo.getUuid().toString()));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         String currentTagId = tagManager.getCurrentPlayerTag(playerInfo.getUuid());
         if (currentTagId == null || currentTagId.isEmpty()) {
-            sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
         } else {
             TagManager.TagInfo tagInfo = tagManager.getTagInfo(currentTagId);
             if (tagInfo != null) {
-                sender.sendMessage(Component.text("§fTag: " + tagInfo.getDisplay()));
+                sender.sendMessage(legacySection().deserialize("§fTag: " + tagInfo.getDisplay()));
             } else {
-                sender.sendMessage(Component.text("§fTag: §7Nenhuma"));
+                sender.sendMessage(legacySection().deserialize("§fTag: §7Nenhuma"));
             }
         }
 
         // Buscar medalha do jogador offline
         String medal = medalManager.getPlayerMedalByUUID(playerInfo.getUuid());
         if (medal.isEmpty()) {
-            sender.sendMessage(Component.text("§fMedalha: §7Nenhuma"));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: §7Nenhuma"));
         } else {
-            sender.sendMessage(Component.text("§fMedalha: " + medal));
+            sender.sendMessage(legacySection().deserialize("§fMedalha: " + medal));
         }
 
-        sender.sendMessage(Component.text(" "));
-        sender.sendMessage(Component.text("§fConexão: §cOffline"));
-        sender.sendMessage(Component.text("§fVersão: §7Desconhecida"));
-        sender.sendMessage(Component.text("§fPing: §7N/A"));
-        sender.sendMessage(Component.text(" "));
+        sender.sendMessage(legacySection().deserialize(" "));
+        sender.sendMessage(legacySection().deserialize("§fConexão: §cOffline"));
+        sender.sendMessage(legacySection().deserialize("§fVersão: §7Desconhecida"));
+        sender.sendMessage(legacySection().deserialize("§fPing: §7N/A"));
+        sender.sendMessage(legacySection().deserialize(" "));
 
         // Buscar tempo online
         playtimeManager.getPlayerPlaytime(playerInfo.getUuid()).thenAccept(playtime -> {
             String formattedTime = playtimeManager.formatPlaytime(playtime);
-            sender.sendMessage(Component.text("§fTempo online: §7" + formattedTime));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7" + formattedTime));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             long firstJoin = playerInfo.getFirstJoin();
             long lastJoin = playerInfo.getLastJoin();
 
-            sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-            sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+            sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+            sender.sendMessage(legacySection().deserialize(" "));
 
             // Verificar punições
             checkPunishments(sender, playerInfo.getUuid());
         }).exceptionally(ex -> {
             // Em caso de erro, continuar com o resto das informações
-            sender.sendMessage(Component.text("§fTempo online: §7Erro ao carregar"));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fTempo online: §7Erro ao carregar"));
+            sender.sendMessage(legacySection().deserialize(" "));
             
             long firstJoin = playerInfo.getFirstJoin();
             long lastJoin = playerInfo.getLastJoin();
 
-            sender.sendMessage(Component.text("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
-            sender.sendMessage(Component.text("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
-            sender.sendMessage(Component.text(" "));
+            sender.sendMessage(legacySection().deserialize("§fPrimeiro login: §7" + TimeUtils.formatDate(firstJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(firstJoin) + ")"));
+            sender.sendMessage(legacySection().deserialize("§fÚltimo login: §7" + TimeUtils.formatDate(lastJoin).replace(" ", " às ") + " (" + TimeUtils.getTimeAgo(lastJoin) + ")"));
+            sender.sendMessage(legacySection().deserialize(" "));
 
             // Verificar punições
             checkPunishments(sender, playerInfo.getUuid());
@@ -397,29 +399,29 @@ public class InfoCommand implements SimpleCommand {
         punishmentAPI.getActiveBan(uuid).thenAccept(ban -> {
             punishmentAPI.getActiveMute(uuid).thenAccept(mute -> {
                 if (ban != null || mute != null) {
-                    sender.sendMessage(Component.text("§cPunições ativas:\n"));
+                    sender.sendMessage(legacySection().deserialize("§cPunições ativas:\n"));
 
                     if (ban != null) {
                         String timeRemaining = ban.isPermanent() ? "Permanente" : TimeUtils.formatDuration(ban.getRemainingTime());
-                        sender.sendMessage(Component.text("§fTipo: §cBAN"));
-                        sender.sendMessage(Component.text("§fMotivo: §7" + ban.getReason()));
-                        sender.sendMessage(Component.text("§fTempo restante: §7" + timeRemaining));
-                        sender.sendMessage(Component.text("§fAutor: §7" + ban.getPunisher()));
+                        sender.sendMessage(legacySection().deserialize("§fTipo: §cBAN"));
+                        sender.sendMessage(legacySection().deserialize("§fMotivo: §7" + ban.getReason()));
+                        sender.sendMessage(legacySection().deserialize("§fTempo restante: §7" + timeRemaining));
+                        sender.sendMessage(legacySection().deserialize("§fAutor: §7" + ban.getPunisher()));
                     }
 
                     if (ban != null && mute != null) {
-                        sender.sendMessage(Component.text(" "));
+                        sender.sendMessage(legacySection().deserialize(" "));
                     }
 
                     if (mute != null) {
                         String timeRemaining = mute.isPermanent() ? "Permanente" : TimeUtils.formatDuration(mute.getRemainingTime());
-                        sender.sendMessage(Component.text("§fTipo: §cMUTE"));
-                        sender.sendMessage(Component.text("§fMotivo: §7" + mute.getReason()));
-                        sender.sendMessage(Component.text("§fTempo restante: §7" + timeRemaining));
-                        sender.sendMessage(Component.text("§fAutor: §7" + mute.getPunisher()));
+                        sender.sendMessage(legacySection().deserialize("§fTipo: §cMUTE"));
+                        sender.sendMessage(legacySection().deserialize("§fMotivo: §7" + mute.getReason()));
+                        sender.sendMessage(legacySection().deserialize("§fTempo restante: §7" + timeRemaining));
+                        sender.sendMessage(legacySection().deserialize("§fAutor: §7" + mute.getPunisher()));
                     }
                 }
-                sender.sendMessage(Component.text(" "));
+                sender.sendMessage(legacySection().deserialize(" "));
             });
         });
     }

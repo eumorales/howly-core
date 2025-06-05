@@ -125,29 +125,29 @@ public class ChatListener {
                         .hoverEvent(Component.text("§fGrupo: " + groupManager.getPlayerGroupInfo(sender).getDisplayName()));
             finalMessage = finalMessage.append(groupComponent).append(Component.text(" "));
         }
-}
-
-        // Nome do jogador (usar cor do grupo se disponível, senão usar cor da tag)
-        String nameColor;
-        if (groupManager.isLuckPermsAvailable()) {
-            nameColor = groupManager.getPlayerGroupNameColor(sender);
-        } else {
-            nameColor = tagManager.getPlayerNameColor(sender);
-        }
-
-        TextColor playerNameColor = CoresUtils.getTextColorFromCode(nameColor);
-        finalMessage = finalMessage.append(Component.text(sender.getUsername()).color(playerNameColor));
-
-        // Adicionar mensagem com tooltip de data
-        long timestamp = System.currentTimeMillis();
-        String dateFormatted = TimeUtils.formatDate(timestamp).replace(" ", " às ");
-
-        Component messageComponent = Component.text(": ", TextColor.color(170, 170, 170))
-                .append(Component.text(message).color(TextColor.color(255, 255, 255)))
-                .hoverEvent(Component.text("§7Enviada em §f" + dateFormatted + "§7."));
-
-        finalMessage = finalMessage.append(messageComponent);
-
-        return finalMessage;
     }
+
+    // Nome do jogador (usar cor do grupo se disponível, senão usar cor da tag)
+    String nameColor;
+    if (groupManager.isLuckPermsAvailable()) {
+        nameColor = groupManager.getPlayerGroupNameColor(sender);
+    } else {
+        nameColor = tagManager.getPlayerNameColor(sender);
+    }
+
+    TextColor playerNameColor = CoresUtils.getTextColorFromCode(nameColor);
+    finalMessage = finalMessage.append(Component.text(sender.getUsername()).color(playerNameColor));
+
+    // Adicionar mensagem com tooltip de data
+    long timestamp = System.currentTimeMillis();
+    String dateFormatted = TimeUtils.formatDate(timestamp).replace(" ", " às ");
+
+    Component messageComponent = Component.text(": ", TextColor.color(170, 170, 170))
+            .append(Component.text(message).color(TextColor.color(255, 255, 255)))
+            .hoverEvent(Component.text("§7Enviada em §f" + dateFormatted + "§7."));
+
+    finalMessage = finalMessage.append(messageComponent);
+
+    return finalMessage;
+}
 }

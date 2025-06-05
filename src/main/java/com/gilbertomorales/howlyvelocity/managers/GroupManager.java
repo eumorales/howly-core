@@ -25,6 +25,7 @@ public class GroupManager {
         try {
             this.luckPerms = LuckPermsProvider.get();
             initializeGroupInfo();
+            createMissingGroups();
         } catch (IllegalStateException e) {
             // LuckPerms não está disponível
             this.luckPerms = null;
@@ -41,11 +42,10 @@ public class GroupManager {
         groupInfoMap.put("construtor", new GroupInfo("Construtor", "§a", "howly.construtor", 500));
 
         // Grupos especiais
-        groupInfoMap.put("youtuber", new GroupInfo("YouTuber", "§c", "howly.youtuber", 400));
-        groupInfoMap.put("streamer", new GroupInfo("Streamer", "§9", "howly.streamer", 350));
-        groupInfoMap.put("beta", new GroupInfo("Beta", "§3", "howly.beta", 300));
+        groupInfoMap.put("midia", new GroupInfo("Mídia", "§c", "howly.midia", 400));
 
         // Grupos VIP
+        groupInfoMap.put("beta", new GroupInfo("Beta", "§d", "howly.beta", 300, true));
         groupInfoMap.put("supremo", new GroupInfo("Supremo", "§4", "howly.supremo", 250, true));
         groupInfoMap.put("mitico", new GroupInfo("Mítico", "§5", "howly.mitico", 200, true));
         groupInfoMap.put("lendario", new GroupInfo("Lendário", "§6", "howly.lendario", 150, true));
@@ -53,6 +53,117 @@ public class GroupManager {
 
         // Grupo padrão
         groupInfoMap.put("default", new GroupInfo("Membro", "§7", "", 0));
+    }
+
+    /**
+     * Cria grupos automaticamente no LuckPerms se não existirem
+     */
+    private void createMissingGroups() {
+        if (luckPerms == null) {
+            return;
+        }
+
+        // Primeiro, criar todos os grupos básicos
+        for (Map.Entry<String, GroupInfo> entry : groupInfoMap.entrySet()) {
+            String groupName = entry.getKey();
+            GroupInfo groupInfo = entry.getValue();
+
+            // Pular o grupo default
+            if (groupName.equals("default")) {
+                continue;
+            }
+
+            try {
+                Group group = luckPerms.getGroupManager().getGroup(groupName);
+
+                if (group == null) {
+                    // Grupo não existe, criar
+                    logger.info("Criando grupo ausente: " + groupName);
+
+                    CompletableFuture<Group> createFuture = luckPerms.getGroupManager().createAndLoadGroup(groupName);
+                    Group newGroup = createFuture.join();
+
+                    if (newGroup != null && !groupInfo.getPermission().isEmpty()) {
+                        // Adicionar a permissão específica do grupo
+                        newGroup.data().add(net.luckperms.api.node.types.PermissionNode.builder(groupInfo.getPermission()).build());
+
+                        // Salvar o grupo
+                        luckPerms.getGroupManager().saveGroup(newGroup);
+
+                        logger.info("Grupo " + groupName + " criado com permissão " + groupInfo.getPermission());
+                    }
+                } else {
+                    // Grupo existe, verificar se tem a permissão necessária
+                    if (!groupInfo.getPermission().isEmpty()) {
+                        boolean hasPermission = group.getNodes().stream()
+                                .anyMatch(node -> node instanceof net.luckperms.api.node.types.PermissionNode &&
+                                        ((net.luckperms.api.node.types.PermissionNode) node).getPermission().equals(groupInfo.getPermission()));
+
+                        if (!hasPermission) {
+                            // Adicionar a permissão que está faltando
+                            group.data().add(net.luckperms.api.node.types.PermissionNode.builder(groupInfo.getPermission()).build());
+                            luckPerms.getGroupManager().saveGroup(group);
+                            logger.info("Adicionada permissão " + groupInfo.getPermission() + " ao grupo " + groupName);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Erro ao criar/verificar grupo " + groupName + ": " + e.getMessage());
+            }
+        }
+
+        // Depois, configurar a herança dos grupos de staff
+        setupStaffGroupInheritance();
+    }
+
+    /**
+     * Configura a herança dos grupos de staff
+     */
+    private void setupStaffGroupInheritance() {
+        if (luckPerms == null) {
+            return;
+        }
+
+        // Definir a hierarquia de herança (do menor para o maior)
+        Map<String, String> inheritanceMap = new HashMap<>();
+        inheritanceMap.put("moderador", "ajudante");     // Moderador herda de Ajudante
+        inheritanceMap.put("coordenador", "moderador");  // Coordenador herda de Moderador
+        inheritanceMap.put("gerente", "coordenador");    // Gerente herda de Coordenador
+        inheritanceMap.put("master", "gerente");         // Master herda de Gerente
+
+        for (Map.Entry<String, String> entry : inheritanceMap.entrySet()) {
+            String childGroup = entry.getKey();
+            String parentGroup = entry.getValue();
+
+            try {
+                Group child = luckPerms.getGroupManager().getGroup(childGroup);
+                Group parent = luckPerms.getGroupManager().getGroup(parentGroup);
+
+                if (child != null && parent != null) {
+                    // Verificar se já tem a herança
+                    boolean hasInheritance = child.getNodes(NodeType.INHERITANCE).stream()
+                            .anyMatch(node -> node.getGroupName().equalsIgnoreCase(parentGroup));
+
+                    if (!hasInheritance) {
+                        // Adicionar herança
+                        InheritanceNode inheritanceNode = InheritanceNode.builder(parentGroup).build();
+                        child.data().add(inheritanceNode);
+                        luckPerms.getGroupManager().saveGroup(child);
+
+                        logger.info("Configurada herança: " + childGroup + " agora herda de " + parentGroup);
+                    }
+                } else {
+                    if (child == null) {
+                        logger.warn("Grupo filho não encontrado: " + childGroup);
+                    }
+                    if (parent == null) {
+                        logger.warn("Grupo pai não encontrado: " + parentGroup);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Erro ao configurar herança " + childGroup + " -> " + parentGroup + ": " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -219,14 +330,14 @@ public class GroupManager {
 
         for (String groupName : groups) {
             if (groupName.equals("default")) continue;
-            
+
             GroupInfo info = groupInfoMap.get(groupName);
             if (info == null) continue;
-            
+
             if (!first) {
                 result.append("§7, ");
             }
-            
+
             result.append(info.getFormattedPrefix());
             first = false;
         }
@@ -399,17 +510,17 @@ public class GroupManager {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 User user = luckPerms.getUserManager().loadUser(player.getUniqueId()).join();
-                
+
                 // Remover todos os grupos de herança
                 user.data().clear(n -> n.getType() == NodeType.INHERITANCE);
-                
+
                 // Adicionar o novo grupo
                 InheritanceNode node = InheritanceNode.builder(groupName.toLowerCase()).build();
                 user.data().add(node);
-                
+
                 // Definir como grupo primário
                 user.setPrimaryGroup(groupName.toLowerCase());
-                
+
                 // Salvar alterações
                 luckPerms.getUserManager().saveUser(user);
                 return true;
@@ -451,10 +562,25 @@ public class GroupManager {
         return luckPerms != null;
     }
 
+    /**
+     * Recria todos os grupos no LuckPerms (útil para comandos administrativos)
+     */
+    public void recreateAllGroups() {
+        if (luckPerms == null) {
+            logger.warn("LuckPerms não está disponível para recriar grupos");
+            return;
+        }
+
+        logger.info("Recriando todos os grupos...");
+        createMissingGroups();
+        logger.info("Grupos recriados com sucesso!");
+    }
+
     public void reloadLuckPerms() {
         try {
             this.luckPerms = LuckPermsProvider.get();
             initializeGroupInfo();
+            createMissingGroups();
         } catch (IllegalStateException e) {
             this.luckPerms = null;
         }

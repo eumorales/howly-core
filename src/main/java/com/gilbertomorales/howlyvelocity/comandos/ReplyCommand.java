@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection;
+
 public class ReplyCommand implements SimpleCommand {
 
     private final ProxyServer server;
@@ -38,24 +40,24 @@ public class ReplyCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!(source instanceof Player sender)) {
-            source.sendMessage(Component.text("Apenas jogadores podem usar este comando.").color(TextColor.color(255, 85, 85)));
+            source.sendMessage(legacySection().deserialize("§cApenas jogadores podem usar este comando."));
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(Component.text("Utilize: /r <mensagem>").color(TextColor.color(255, 85, 85)));
+            sender.sendMessage(legacySection().deserialize("§cUtilize: /r <mensagem>"));
             return;
         }
 
         UUID lastSenderUUID = tellCommand.getLastMessageSender(sender.getUniqueId());
         if (lastSenderUUID == null) {
-            sender.sendMessage(Component.text("Você não tem ninguém para responder.").color(TextColor.color(255, 85, 85)));
+            sender.sendMessage(legacySection().deserialize("§cVocê não tem ninguém para responder."));
             return;
         }
 
         Optional<Player> targetOptional = server.getPlayer(lastSenderUUID);
         if (targetOptional.isEmpty()) {
-            sender.sendMessage(Component.text("O jogador não está mais online.").color(TextColor.color(255, 85, 85)));
+            sender.sendMessage(legacySection().deserialize("§cO jogador não está mais online."));
             return;
         }
 
@@ -63,7 +65,7 @@ public class ReplyCommand implements SimpleCommand {
 
         // Verificar se o destinatário está ignorando o remetente
         if (ignoreManager.isIgnoring(target.getUniqueId(), sender.getUniqueId())) {
-            sender.sendMessage(Component.text("Este jogador está te ignorando.").color(TextColor.color(255, 85, 85)));
+            sender.sendMessage(legacySection().deserialize("§cEste jogador está te ignorando."));
             return;
         }
 
@@ -80,7 +82,7 @@ public class ReplyCommand implements SimpleCommand {
         target.sendMessage(targetMessage);
 
         // Atualizar para /r do destinatário
-        tellCommand.getLastMessageSender(target.getUniqueId());
+        tellCommand.updateLastMessageSender(target.getUniqueId(), sender.getUniqueId());
     }
 
     /**

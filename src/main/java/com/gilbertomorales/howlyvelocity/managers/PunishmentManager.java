@@ -127,17 +127,11 @@ public class PunishmentManager {
         String punisher = rs.getString("punisher");
         long createdAt = rs.getLong("created_at");
         
-        // Obter expires_at como Long, pode ser null
-        Long expiresAt = null;
-        if (!rs.wasNull()) {
-            expiresAt = rs.getLong("expires_at");
-            if (rs.wasNull()) {
-                expiresAt = null;
-            }
-        }
+        // Corrigir a obtenção do expires_at
+        Long expiresAt = rs.getObject("expires_at", Long.class);
         
         boolean active = rs.getBoolean("active");
-
+        
         return new Punishment(id, playerUUID, type, reason, punisher, createdAt, expiresAt, active);
     }
 
