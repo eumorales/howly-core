@@ -2,6 +2,8 @@ package com.gilbertomorales.howlyvelocity;
 
 import com.gilbertomorales.howlyvelocity.api.HowlyAPI;
 import com.gilbertomorales.howlyvelocity.comandos.*;
+import com.gilbertomorales.howlyvelocity.comandos.GoCommand;
+import com.gilbertomorales.howlyvelocity.comandos.MidiaChatCommand;
 import com.gilbertomorales.howlyvelocity.config.ConfigManager;
 import com.gilbertomorales.howlyvelocity.listeners.ChatListener;
 import com.gilbertomorales.howlyvelocity.listeners.MaintenanceListener;
@@ -157,7 +159,11 @@ public class HowlyVelocity {
 
         // Chats especiais
         commandManager.register("s", new StaffChatCommand(server, groupManager));
-        commandManager.register("yt", new YouTuberChatCommand(server, groupManager));
+        // Chat da mídia (antigo YouTuber)
+        MidiaChatCommand midiaChatCommand = new MidiaChatCommand(server, groupManager);
+        commandManager.register("m", midiaChatCommand);
+        commandManager.register("yt", midiaChatCommand); // Alias para compatibilidade
+
         commandManager.register("b", new BunkerChatCommand(server, groupManager));
 
         // Sistema de ignorar
@@ -183,6 +189,10 @@ public class HowlyVelocity {
 
         // Comando de tempo online
         commandManager.register("tempo", new TempoCommand(server, playtimeManager));
+
+        // Comando de teleporte entre servidores
+        commandManager.register("go", new GoCommand(server, groupManager));
+        commandManager.register("btp", new GoCommand(server, groupManager)); // Alias
         
         logger.info(LogColor.success("HowlyVelocity", "Comandos registrados com sucesso!"));
     }

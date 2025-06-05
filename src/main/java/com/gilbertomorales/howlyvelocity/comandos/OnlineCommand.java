@@ -25,12 +25,15 @@ public class OnlineCommand implements SimpleCommand {
             return;
         }
 
+        int totalPlayers = server.getPlayerCount();
+
+        // Se não tiver permissão, mostrar apenas o total
         if (!sender.hasPermission("howly.ajudante")) {
-            sender.sendMessage(legacySection().deserialize("§cVocê precisa ser do grupo §eAjudante §cou superior para usar este comando."));
+            sender.sendMessage(legacySection().deserialize("§aAtualmente estamos com " + totalPlayers + " usuários conectados em nossa rede."));
             return;
         }
 
-        int totalPlayers = server.getPlayerCount();
+        // Se tiver permissão, mostrar estatísticas detalhadas
         sender.sendMessage(legacySection().deserialize(" "));
         sender.sendMessage(legacySection().deserialize("§eEstatísticas de usuários por servidor conectado:"));
         sender.sendMessage(legacySection().deserialize(" "));

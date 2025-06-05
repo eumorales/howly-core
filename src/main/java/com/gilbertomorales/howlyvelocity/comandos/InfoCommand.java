@@ -146,7 +146,8 @@ public class InfoCommand implements SimpleCommand {
         sender.sendMessage(legacySection().deserialize("§eInformações:"));
         sender.sendMessage(legacySection().deserialize(" "));
         sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + targetName));
-        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        String cleanGroups = formattedGroups.replaceAll("\\[|\\]", "");
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + cleanGroups));
         sender.sendMessage(legacySection().deserialize("§fID: §7#" + playerId));
         sender.sendMessage(legacySection().deserialize("§fUUID: §7" + target.getUniqueId().toString()));
         sender.sendMessage(legacySection().deserialize(" "));
@@ -240,7 +241,8 @@ public class InfoCommand implements SimpleCommand {
         sender.sendMessage(legacySection().deserialize("§eInformações:"));
         sender.sendMessage(legacySection().deserialize(" "));
         sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + targetName));
-        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        String cleanGroups = formattedGroups.replaceAll("\\[|\\]", "");
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + cleanGroups));
         sender.sendMessage(legacySection().deserialize("§fID: §7Carregando..."));
         sender.sendMessage(legacySection().deserialize("§fUUID: §7" + target.getUniqueId().toString()));
         sender.sendMessage(legacySection().deserialize(" "));
@@ -330,7 +332,8 @@ public class InfoCommand implements SimpleCommand {
         sender.sendMessage(legacySection().deserialize("§eInformações:"));
         sender.sendMessage(legacySection().deserialize(" "));
         sender.sendMessage(legacySection().deserialize("§fUsuário: §7" + playerInfo.getName()));
-        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + formattedGroups));
+        String cleanGroups = formattedGroups.replaceAll("\\[|\\]", "");
+        sender.sendMessage(legacySection().deserialize("§fGrupo(s): " + cleanGroups));
         sender.sendMessage(legacySection().deserialize("§fID: §7#" + playerInfo.getId()));
         sender.sendMessage(legacySection().deserialize("§fUUID: §7" + playerInfo.getUuid().toString()));
         sender.sendMessage(legacySection().deserialize(" "));
