@@ -1,6 +1,7 @@
 package com.gilbertomorales.howlyvelocity.comandos;
 
 import com.gilbertomorales.howlyvelocity.managers.MedalManager;
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
@@ -69,7 +70,7 @@ public class MedalCommand implements SimpleCommand {
         if (medalId.equals("nenhuma")) {
             player.sendMessage(Component.text("§aMedalha removida com sucesso!"));
         } else {
-            Component medalComponent = Component.text(medalInfo.getSymbol()).color(getTextColorFromCode(medalInfo.getColor()));
+            Component medalComponent = Component.text(medalInfo.getSymbol()).color(CoresUtils.getTextColorFromCode(medalInfo.getColor()));
             Component message = Component.text("§aMedalha alterada para ")
                     .append(medalComponent)
                     .append(Component.text(" §acom sucesso!"));
@@ -96,7 +97,7 @@ public class MedalCommand implements SimpleCommand {
         if (currentMedal != null) {
             MedalManager.MedalInfo currentMedalInfo = medalManager.getMedalInfo(currentMedal);
             if (currentMedalInfo != null) {
-                Component medalComponent = Component.text(currentMedalInfo.getSymbol()).color(getTextColorFromCode(currentMedalInfo.getColor()));
+                Component medalComponent = Component.text(currentMedalInfo.getSymbol()).color(CoresUtils.getTextColorFromCode(currentMedalInfo.getColor()));
                 player.sendMessage(Component.text("§fMedalha atual: ").append(medalComponent));
             }
         } else {
@@ -121,33 +122,6 @@ public class MedalCommand implements SimpleCommand {
             return str;
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    private TextColor getTextColorFromCode(String colorCode) {
-        if (colorCode == null || colorCode.isEmpty()) {
-            return TextColor.color(255, 255, 255);
-        }
-
-        char code = colorCode.charAt(colorCode.length() - 1);
-        return switch (code) {
-            case '0' -> TextColor.color(0, 0, 0);          // Preto
-            case '1' -> TextColor.color(0, 0, 170);        // Azul escuro
-            case '2' -> TextColor.color(0, 170, 0);        // Verde escuro
-            case '3' -> TextColor.color(0, 170, 170);      // Ciano
-            case '4' -> TextColor.color(170, 0, 0);        // Vermelho escuro
-            case '5' -> TextColor.color(170, 0, 170);      // Roxo
-            case '6' -> TextColor.color(255, 170, 0);      // Dourado
-            case '7' -> TextColor.color(170, 170, 170);    // Cinza
-            case '8' -> TextColor.color(85, 85, 85);       // Cinza escuro
-            case '9' -> TextColor.color(85, 85, 255);      // Azul
-            case 'a' -> TextColor.color(85, 255, 85);      // Verde
-            case 'b' -> TextColor.color(85, 255, 255);     // Azul claro
-            case 'c' -> TextColor.color(255, 85, 85);      // Vermelho
-            case 'd' -> TextColor.color(255, 85, 255);     // Rosa
-            case 'e' -> TextColor.color(255, 255, 85);     // Amarelo
-            case 'f' -> TextColor.color(255, 255, 255);    // Branco
-            default -> TextColor.color(255, 255, 255);
-        };
     }
 
     @Override

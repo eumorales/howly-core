@@ -12,6 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.format.TextColor;
 import com.gilbertomorales.howlyvelocity.api.HowlyAPI;
 import com.gilbertomorales.howlyvelocity.managers.GroupManager;
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +105,7 @@ public class ReplyCommand implements SimpleCommand {
         }
 
         // Adicionar nome do jogador
-        TextColor playerNameColor = getTextColorFromCode(nameColor);
+        TextColor playerNameColor = CoresUtils.getTextColorFromCode(nameColor);
         finalMessage = finalMessage.append(Component.text(displayPlayer.getUsername()).color(playerNameColor));
 
         // Adicionar dois pontos e mensagem
@@ -112,33 +113,6 @@ public class ReplyCommand implements SimpleCommand {
                 .append(Component.text(message).color(TextColor.color(255, 255, 255)));
 
         return finalMessage;
-    }
-
-    private TextColor getTextColorFromCode(String colorCode) {
-        if (colorCode == null || colorCode.isEmpty()) {
-            return TextColor.color(255, 255, 255);
-        }
-
-        char code = colorCode.charAt(colorCode.length() - 1);
-        return switch (code) {
-            case '0' -> TextColor.color(0, 0, 0);          // Preto
-            case '1' -> TextColor.color(0, 0, 170);        // Azul escuro
-            case '2' -> TextColor.color(0, 170, 0);        // Verde escuro
-            case '3' -> TextColor.color(0, 170, 170);      // Ciano
-            case '4' -> TextColor.color(170, 0, 0);        // Vermelho escuro
-            case '5' -> TextColor.color(170, 0, 170);      // Roxo
-            case '6' -> TextColor.color(255, 170, 0);      // Dourado
-            case '7' -> TextColor.color(170, 170, 170);    // Cinza
-            case '8' -> TextColor.color(85, 85, 85);       // Cinza escuro
-            case '9' -> TextColor.color(85, 85, 255);      // Azul
-            case 'a' -> TextColor.color(85, 255, 85);      // Verde
-            case 'b' -> TextColor.color(85, 255, 255);     // Azul claro
-            case 'c' -> TextColor.color(255, 85, 85);      // Vermelho
-            case 'd' -> TextColor.color(255, 85, 255);     // Rosa
-            case 'e' -> TextColor.color(255, 255, 85);     // Amarelo
-            case 'f' -> TextColor.color(255, 255, 255);    // Branco
-            default -> TextColor.color(255, 255, 255);
-        };
     }
 
     @Override

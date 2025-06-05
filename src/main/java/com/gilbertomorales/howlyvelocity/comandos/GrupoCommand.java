@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
+
 public class GrupoCommand implements SimpleCommand {
 
    private final ProxyServer server;
@@ -161,12 +163,13 @@ public class GrupoCommand implements SimpleCommand {
            return;
        }
 
-       String title = groupInfo.getColor() + target.getUsername();
-       String subtitle = "§f tornou-se " + groupInfo.getFormattedPrefix();
+       // Usar CoresUtils para garantir que as cores funcionem corretamente
+       Component titleComponent = CoresUtils.colorize(groupInfo.getColor() + target.getUsername());
+       Component subtitleComponent = CoresUtils.colorize("§f tornou-se " + groupInfo.getColor() + "[" + groupInfo.getDisplayName() + "]");
 
        // Enviar title para todos os jogadores
        for (Player player : server.getAllPlayers()) {
-           TitleAPI.sendTitle(player, title, subtitle);
+           TitleAPI.sendTitle(player, titleComponent, subtitleComponent);
        }
    }
 

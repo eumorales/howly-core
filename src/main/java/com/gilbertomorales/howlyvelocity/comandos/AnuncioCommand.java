@@ -1,5 +1,6 @@
 package com.gilbertomorales.howlyvelocity.comandos;
 
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -34,7 +35,7 @@ public class AnuncioCommand implements SimpleCommand {
         }
 
         String message = String.join(" ", args);
-        String formattedMessage = Cores.colorir("&d&l[ANÚNCIO] &f" + message);
+        String formattedMessage = CoresUtils.colorir("&d&l[ANÚNCIO] &f" + message);
 
         server.getAllPlayers().forEach(player -> {
             player.sendMessage(Component.text(" "));

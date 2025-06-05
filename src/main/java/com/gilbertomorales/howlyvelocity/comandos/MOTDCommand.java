@@ -1,6 +1,7 @@
 package com.gilbertomorales.howlyvelocity.comandos;
 
 import com.gilbertomorales.howlyvelocity.managers.MOTDManager;
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
@@ -63,8 +64,8 @@ public class MOTDCommand implements SimpleCommand {
         source.sendMessage(Component.text("§fLinha 2: §r" + motdManager.getSecondLine()));
         source.sendMessage(Component.text(""));
         source.sendMessage(Component.text("§eVisualização:"));
-        source.sendMessage(Component.text(Cores.colorir(motdManager.getFirstLine())));
-        source.sendMessage(Component.text(Cores.colorir(motdManager.getSecondLine())));
+        source.sendMessage(Component.text(CoresUtils.colorir(motdManager.getFirstLine())));
+        source.sendMessage(Component.text(CoresUtils.colorir(motdManager.getSecondLine())));
         source.sendMessage(Component.text(""));
     }
 

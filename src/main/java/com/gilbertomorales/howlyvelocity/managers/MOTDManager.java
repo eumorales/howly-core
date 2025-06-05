@@ -1,9 +1,9 @@
 package com.gilbertomorales.howlyvelocity.managers;
 
-import com.gilbertomorales.howlyvelocity.comandos.Cores;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.gilbertomorales.howlyvelocity.utils.CoresUtils;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -79,7 +79,7 @@ public class MOTDManager {
     }
 
     public String getFullMotd() {
-        return Cores.colorir(getFirstLine() + "\n" + getSecondLine());
+        return CoresUtils.colorir(getFirstLine() + "\n" + getSecondLine());
     }
 
     public void setSecondLine(String secondLine) {
